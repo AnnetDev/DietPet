@@ -9,6 +9,7 @@ export const translations = {
         today: 'Today',
         day: 'Day',
         week: 'Week',
+        of: 'of',
         weeks: 'weeks',
         notes: 'Notes',
         dietStart: 'Diet start date',
@@ -18,6 +19,8 @@ export const translations = {
         breed: 'Breed',
         age: 'Age',
         loading: 'Loading...',
+        duplicate: 'Duplicate',
+        delete: 'Delete',
     },
     ru: {
         appName: 'DietPet',
@@ -29,6 +32,7 @@ export const translations = {
         today: 'Сегодня',
         day: 'День',
         week: 'Неделя',
+        of: 'из',
         weeks: 'недель',
         notes: 'Заметки',
         dietStart: 'Начало диеты',
@@ -38,6 +42,8 @@ export const translations = {
         breed: 'Порода',
         age: 'Возраст',
         loading: 'Загрузка...',
+        duplicate: 'Дублировать',
+        delete: 'Удалить',
     }
 }
 
