@@ -1,3 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ===== СВЕТЛАЯ ТЕМА (по умолчанию) ===== */
+
+  /* Фоны */
+  --bg-app:        #F5EDE0;
+  --bg-card:       #FFFFFF;
+  --bg-hero:       #C17A3A;
+  --bg-hero-soft:  #E8A96A;
+  --bg-tag:        #FEF3E2;
+  --bg-today:      #C17A3A;
+
+  /* Текст */
+  --text-primary:  #2C1810;
+  --text-muted:    #9A7B6A;
+  --text-on-hero:  #FFFFFF;
+
+  /* Акцент */
+  --accent:        #C17A3A;
+  --accent-light:  #E8A96A;
+  --accent-soft:   #FEF3E2;
+
+  /* Границы */
+  --border:        #EDE0D0;
+
+  /* Иконки типов корма */
+  --color-dry:      #C17A3A;
+  --color-wet:      #5B9BD5;
+  --color-medicine: #E8A96A;
+  --color-other:    #9A7B6A;
+}
+
+/* ===== ТЁМНАЯ ТЕМА ===== */
+[data-theme="dark"] {
+  --bg-app:        #1A1208;
+  --bg-card:       #2C1F10;
+  --bg-hero:       #8B4E1A;
+  --bg-hero-soft:  #A86030;
+  --bg-tag:        #3A2510;
+  --bg-today:      #8B4E1A;
+
+  --text-primary:  #F5EDE0;
+  --text-muted:    #C4A882;
+  --text-on-hero:  #FFFFFF;
+
+  --accent:        #E8A96A;
+  --accent-light:  #F5C896;
+  --accent-soft:   #3A2510;
+
+  --border:        #3A2510;
+}
+
+/* ===== БАЗОВЫЕ СТИЛИ ===== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
