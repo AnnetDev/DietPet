@@ -4,8 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
-  base: '/DietPet/',
-  plugins: [
+  base: process.env.NODE_ENV === 'production' ? '/DietPet/' : '/',
+    plugins: [
     react(),
     svgr(),
     VitePWA({

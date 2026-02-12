@@ -4,6 +4,8 @@ import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { Pet } from '../types'
 import { MoreHorizontal, Plus, Copy, Trash2 } from 'lucide-react'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 function getDayAndWeek(startDate: string | null) {
     if (!startDate) return null
@@ -166,14 +168,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-app flex flex-col">
             {/* header */}
-            <div className="px-5 pt-14 pb-4">
-                <div className="text-2xl font-black text-primary">
-                    Diet<span className="text-accent">Pet</span>
-                </div>
-                <div className="text-xs font-bold text-muted tracking-widest uppercase mt-0.5">
-                    {t.myPets}
-                </div>
-            </div>
+            <Header />
 
             {/* Pet list */}
             <div className="flex-1 px-4 flex flex-col gap-3 pb-8">
@@ -201,12 +196,7 @@ export default function HomePage() {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-border bg-card px-6 pb-8 pt-3
-        flex justify-between items-center">
-                <div className="text-base font-black text-primary">
-                    Diet<span className="text-accent">Pet</span>
-                </div>
-            </div>
+            <Footer/>
         </div>
     )
 }
