@@ -5,9 +5,9 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
     ru: {
         name: 'Дженкин',
         breed: 'Обычный кот',
-        age: '10',
+        age: '11',
         diagnosis: 'МКБ',
-        photo: null,
+        photo: '/petExample.webp',
         dietStartDate: '2026-02-03',
         dietSchedule: [
             {
@@ -67,9 +67,9 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
     en: {
         name: 'Jenkin',
         breed: 'Domestic cat',
-        age: '10',
+        age: '11',
         diagnosis: 'Urolithiasis',
-        photo: null,
+        photo: '/petExample.webp',
         dietStartDate: '2026-02-03',
         dietSchedule: [
             {

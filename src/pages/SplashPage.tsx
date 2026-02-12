@@ -12,7 +12,7 @@ export default function SplashPage() {
             setTimeout(() => setStage('diet'), 800),
             setTimeout(() => setStage('pet'), 1400),
             setTimeout(() => setStage('line'), 1900),
-            setTimeout(() => navigate('/home', { replace: true }), 400000),
+            setTimeout(() => navigate('/home', { replace: true }), 4000),
         ]
         return () => timers.forEach(clearTimeout)
     }, [navigate])
@@ -20,7 +20,6 @@ export default function SplashPage() {
     return (
         <div className="min-h-screen bg-app flex  items-center justify-center gap-6">
 
-            {/* Логотип-капля */}
             <div
                 style={{
                     animation: 'fadeIn 1s ease forwards',
@@ -64,23 +63,16 @@ export default function SplashPage() {
                 >
                     Pet
                 </div>
-                {/* Подзаголовок */}
-            <div
-                className="text-sm text-muted font-semibold tracking-wide"
-                style={{
-                    opacity: stage === 'line' ? 1 : 0,
-                    transition: 'opacity 0.6s ease',
-                }}
-            >
-                pet nutrition tracker
-            </div>
-
+                <div
+                    className="text-sm text-muted font-semibold tracking-wide"
+                    style={{
+                        opacity: stage === 'line' ? 1 : 0,
+                        transition: 'opacity 0.6s ease',
+                    }}
+                >
+                    pet nutrition tracker
+                </div>
             </div></div>
-            
-
-            
-
         </div>
-        
     )
 }

@@ -39,16 +39,15 @@ function PetCard({
 
     return (
         <div className="bg-card rounded-2xl p-4 shadow-sm relative">
-            {/* Кнопка меню */}
+            {/* Menu btn */}
             <button
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-app
-          flex items-center justify-center text-muted"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-app flex items-center justify-center text-muted"
                 onClick={() => setMenuOpen(v => !v)}
             >
                 <MoreHorizontal size={16} />
             </button>
 
-            {/* Дропдаун меню */}
+            {/* drop down menu */}
             {menuOpen && (
                 <>
                     <div
@@ -77,24 +76,35 @@ function PetCard({
                 </>
             )}
 
-            {/* Основной контент карточки */}
+
             <button className="w-full text-left" onClick={onOpen}>
                 <div className="flex items-start gap-3 pr-8">
-                    {/* Аватар */}
-                    <div className="w-14 h-14 rounded-full bg-hero flex items-center
-            justify-center text-2xl flex-shrink-0 overflow-hidden">
+                    {/* Avatar */}
+                    <div className="w-14 h-14 rounded-full bg-hero flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
                         {pet.photo
-                            ? <img src={pet.photo} className="w-full h-full object-cover" />
+                            ? <img src={pet.photo} className="w-full h-full object-cover" alt={pet.name} />
                             : '🐾'}
                     </div>
 
-                    {/* Инфо */}
+                    {/* PetInfo */}
                     <div className="flex-1 min-w-0">
                         <div className="font-black text-base text-primary">{pet.name}</div>
                         <div className="text-xs text-muted mt-0.5">
-                            {[pet.breed, pet.age && `${pet.age} л`, pet.weightHistory.at(-1) && `${pet.weightHistory[pet.weightHistory.length - 1]?.value
-} кг`]
-                                .filter(Boolean).join(' · ')}
+                            {/* {[
+                                pet.breed,
+                                pet.age && typeof t.years === 'function'
+                                    ? `${pet.age} ${t.years(Number(pet.age))}`
+                                    : pet.age,
+                                pet.weightHistory[pet.weightHistory.length - 1] &&
+                                `${pet.weightHistory[pet.weightHistory.length - 1]!.value} ${t.kg}`
+                            ].filter(Boolean).join(' · ')} */}
+                            {[
+                                pet.breed,
+                                pet.age && `${pet.age} ${typeof t.years === 'function' ? t.years(Number(pet.age)) : t.years}`,
+                                pet.weightHistory[pet.weightHistory.length - 1] &&
+                                `${pet.weightHistory[pet.weightHistory.length - 1]!.value} ${t.kg}`
+                            ].filter(Boolean).join(' · ')}
+
                         </div>
                         {pet.diagnosis && (
                             <span className="inline-block mt-1.5 text-xs font-bold
@@ -105,7 +115,7 @@ function PetCard({
                     </div>
                 </div>
 
-                {/* Прогресс диеты */}
+                {/* Progress */}
                 {progress && totalWeeks > 0 && (
                     <div className="mt-3 pt-3 border-t border-border">
                         <div className="flex justify-between items-center mb-1.5">
@@ -155,18 +165,17 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen bg-app flex flex-col">
-            {/* Шапка */}
+            {/* header */}
             <div className="px-5 pt-14 pb-4">
                 <div className="text-2xl font-black text-primary">
                     Diet<span className="text-accent">Pet</span>
                 </div>
-                <div className="text-xs font-bold text-muted tracking-widest
-          uppercase mt-0.5">
+                <div className="text-xs font-bold text-muted tracking-widest uppercase mt-0.5">
                     {t.myPets}
                 </div>
             </div>
 
-            {/* Список питомцев */}
+            {/* Pet list */}
             <div className="flex-1 px-4 flex flex-col gap-3 pb-8">
                 {pets.map(pet => (
                     <PetCard
@@ -179,7 +188,7 @@ export default function HomePage() {
                     />
                 ))}
 
-                {/* Кнопка добавить */}
+                {/* Add btn */}
                 <button
                     onClick={handleAddPet}
                     className="bg-card rounded-2xl p-5 border-2 border-dashed
@@ -191,7 +200,7 @@ export default function HomePage() {
                 </button>
             </div>
 
-            {/* Футер */}
+            {/* Footer */}
             <div className="border-t border-border bg-card px-6 pb-8 pt-3
         flex justify-between items-center">
                 <div className="text-base font-black text-primary">

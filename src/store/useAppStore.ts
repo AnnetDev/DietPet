@@ -22,7 +22,7 @@ function loadState(): AppState {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (raw) return JSON.parse(raw)
     } catch {
-        // localStorage недоступен или данные повреждены
+        // localStorage unavailable or corrupted
     }
     const language = detectLanguage()
     return { pets: getDefaultPets(language), language }
@@ -53,7 +53,7 @@ export function useAppStore() {
         const copy: Pet = {
             ...pet,
             id: Date.now().toString(),
-            name: pet.name + ' (копия)',
+            name: pet.name + ' (копия)', // TODO: add translation
         }
         setState(s => ({ ...s, pets: [...s.pets, copy] }))
     }

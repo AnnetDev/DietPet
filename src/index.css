@@ -12,9 +12,9 @@
 }
 
 :root {
-  /* ===== СВЕТЛАЯ ТЕМА (по умолчанию) ===== */
+  /* Light */
 
-  /* Фоны */
+  /* backgrounds */
   --bg-app:        #F5EDE0;
   --bg-card:       #FFFFFF;
   --bg-hero:       #C17A3A;
@@ -22,27 +22,27 @@
   --bg-tag:        #FEF3E2;
   --bg-today:      #C17A3A;
 
-  /* Текст */
+  /* Text */
   --text-primary:  #2C1810;
   --text-muted:    #9A7B6A;
   --text-on-hero:  #FFFFFF;
 
-  /* Акцент */
+  /* Accent */
   --accent:        #C17A3A;
   --accent-light:  #E8A96A;
   --accent-soft:   #FEF3E2;
 
-  /* Границы */
+  /* Borders */
   --border:        #EDE0D0;
 
-  /* Иконки типов корма */
+  /* Icons */
   --color-dry:      #C17A3A;
   --color-wet:      #5B9BD5;
   --color-medicine: #E8A96A;
   --color-other:    #9A7B6A;
 }
 
-/* ===== ТЁМНАЯ ТЕМА ===== */
+/* Dark*/
 [data-theme="dark"] {
   --bg-app:        #1A1208;
   --bg-card:       #2C1F10;
@@ -62,7 +62,7 @@
   --border:        #3A2510;
 }
 
-/* ===== БАЗОВЫЕ СТИЛИ ===== */
+/* Basic styles */
 * {
   -webkit-tap-highlight-color: transparent;
 }
