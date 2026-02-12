@@ -24,7 +24,14 @@ export const translations = {
         delete: "Delete",
         years: "y.o.",
         kg: "kg",
-        goBack: "Go back",
+        goBack: 'Back',
+        editPet: 'Edit Pet',
+        uploadPhoto: 'Upload Photo',
+        petName: 'Name',
+        petNamePlaceholder: 'Enter pet name',
+        breedPlaceholder: 'e.g. Domestic cat',
+        cancel: 'Cancel',
+        save: 'Save',
     },
     ru: {
         appName: "DietPet",
@@ -58,8 +65,14 @@ export const translations = {
             if (lastDigit >= 2 && lastDigit <= 4) return "года";
             return "лет";
         },
-        goBack: "Назад"
-    },
+        goBack: 'Назад',
+        editPet: 'Редактировать',
+        uploadPhoto: 'Загрузить фото',
+        petName: 'Имя',
+        petNamePlaceholder: 'Введите имя питомца',
+        breedPlaceholder: 'например, Обычный кот',
+        cancel: 'Отмена',
+        save: 'Сохранить',    },
 };
 
 export type TranslationKey = keyof typeof translations.en;

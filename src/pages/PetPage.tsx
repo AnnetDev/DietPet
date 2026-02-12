@@ -1,69 +1,91 @@
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { Pet } from '../types'
-import { ChevronLeft, DotIcon, SquarePen } from 'lucide-react'
+import { ChevronLeft, Dot, SquarePen } from 'lucide-react'
+import EditPetModal from '../components/EditPetModal'
 
 export default function PetPage() {
     const { id } = useParams()
     const navigate = useNavigate()
-    const { pets, language } = useAppStore()
+    const { pets, language, updatePet } = useAppStore()
     const pet = pets.find(p => p.id === id)
+    const [editModalOpen, setEditModalOpen] = useState(false)
 
     const t = translations[language]
-
 
     if (!pet) {
         navigate('/home', { replace: true })
         return null
     }
 
+    const handleSave = (updates: Partial<Pet>) => {
+        updatePet({ ...pet, ...updates })
+    }
+
     return (
         <div className="min-h-screen bg-app">
             <div className="bg-hero px-5 pt-14 pb-6">
-                            {/* TODO: все поля в шапке карточки должны быть позволять редактировать при клике на сам элемент: фото, порода, возраст, вес, имя */}
 
-                <div className='flex items-center justify-between mb-6'>
+                <div className="flex items-center justify-between mb-6">
                     <button
-                    onClick={() => navigate('/home')}
-                    className="flex items-center gap-1 text-on-hero opacity-75
-            text-sm font-bold"
-                >
-                    <ChevronLeft size={16} />
-                    {t.goBack}
-                </button>
-                
-                <button>
-                    <SquarePen size={18} className='stroke-[var(--text-on-hero)]'/>
-                {/* TODO: добавить открытие модального и инпутами для добавления/обновления фото, вводе/изменения имени, веса, возраста, породы */}
-                </button>
+                        onClick={() => navigate('/home')}
+                        className="flex items-center gap-1 text-on-hero text-sm font-bold"
+                    >
+                        <ChevronLeft size={16} />
+                        {t.goBack}
+                    </button>
+
+                    <button onClick={() => setEditModalOpen(true)}>
+                        <SquarePen size={18} style={{ stroke: 'var(--text-on-hero)' }} />
+                    </button>
                 </div>
-                
-                <div className='flex flex-col gap-3'>
+
+                <div className="flex flex-col gap-3">
                     {/* Avatar */}
-                    <div className="w-32 h-32 rounded-full bg-hero flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <div className="w-32 h-32 rounded-full bg-hero flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-on-hero/20">
                         {pet.photo
                             ? <img src={pet.photo} className="w-full h-full object-cover" alt={pet.name} />
-                            : '🐾'}
+                            : <span className="text-5xl">🐾</span>
+                        }
                     </div>
 
                     <div className="text-3xl font-black text-on-hero">
                         {pet.name || t.newPet}
                     </div>
-                    <div className='flex text-on-hero' >
-                        {pet.breed}
-                        <DotIcon />
-                        {pet.age && `${pet.age} ${typeof t.years === 'function' ? t.years(Number(pet.age)) : t.years}`}
-                        <DotIcon />
-                        {pet.weightHistory[pet.weightHistory.length - 1] && `${pet.weightHistory[pet.weightHistory.length - 1]!.value} ${t.kg}`}
+
+                    <div className="flex items-center text-on-hero text-sm opacity-90">
+                        {pet.breed && <span>{pet.breed}</span>}
+                        {pet.breed && pet.age && <Dot size={20} />}
+                        {pet.age && (
+                            <span>
+                                {pet.age} {typeof t.years === 'function' ? t.years(Number(pet.age)) : t.years}
+                            </span>
+                        )}
+                        {pet.weightHistory.length > 0 && <Dot size={20} />}
+                        {pet.weightHistory.length > 0 && (
+                            <span>
+                                {pet.weightHistory[pet.weightHistory.length - 1]!.value} {t.kg}
+                            </span>
+                        )}
                     </div>
                 </div>
-
             </div>
 
             <div className="p-5 text-muted font-semibold">
                 Страница питомца — в разработке 🐾
             </div>
+
+            {/* Modal */}
+            {editModalOpen && (
+                <EditPetModal
+                    pet={pet}
+                    language={language}
+                    onSave={handleSave}
+                    onClose={() => setEditModalOpen(false)}
+                />
+            )}
         </div>
     )
 }
