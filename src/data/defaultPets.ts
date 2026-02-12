@@ -7,7 +7,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
         breed: 'Обычный кот',
         age: '11',
         diagnosis: 'МКБ',
-        photo: '/petExample.webp',
+        photo: './petExample.webp',
         dietStartDate: '2026-02-03',
         dietSchedule: [
             {
@@ -69,7 +69,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
         breed: 'Domestic cat',
         age: '11',
         diagnosis: 'Urolithiasis',
-        photo: '/petExample.webp',
+        photo: './petExample.webp',
         dietStartDate: '2026-02-03',
         dietSchedule: [
             {
