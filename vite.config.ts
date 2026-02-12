@@ -4,7 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
-  base: './',
+  base: '/DietPet/',
   plugins: [
     react(),
     svgr(),
@@ -20,12 +20,12 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: 'icon-192.png',
+            src: 'icon-192.png?v=2',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'icon-512.png',
+            src: 'icon-512.png?v=2',
             sizes: '512x512',
             type: 'image/png'
           }
