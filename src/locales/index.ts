@@ -3,6 +3,7 @@ export const translations = {
         appName: "DietPet",
         myPets: "My Pets",
         addPet: "Add Pet",
+        newPet: "New Pet",
         weight: "Weight",
         diagnosis: "Diagnosis",
         diet: "Diet Schedule",
@@ -23,11 +24,13 @@ export const translations = {
         delete: "Delete",
         years: "y.o.",
         kg: "kg",
+        goBack: "Go back",
     },
     ru: {
         appName: "DietPet",
         myPets: "Мои питомцы",
         addPet: "Добавить питомца",
+        newPet: "Новый питомец",
         weight: "Вес",
         diagnosis: "Диагноз",
         diet: "График диеты",
@@ -55,6 +58,7 @@ export const translations = {
             if (lastDigit >= 2 && lastDigit <= 4) return "года";
             return "лет";
         },
+        goBack: "Назад"
     },
 };
 

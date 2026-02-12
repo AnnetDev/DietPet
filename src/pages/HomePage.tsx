@@ -92,14 +92,6 @@ function PetCard({
                     <div className="flex-1 min-w-0">
                         <div className="font-black text-base text-primary">{pet.name}</div>
                         <div className="text-xs text-muted mt-0.5">
-                            {/* {[
-                                pet.breed,
-                                pet.age && typeof t.years === 'function'
-                                    ? `${pet.age} ${t.years(Number(pet.age))}`
-                                    : pet.age,
-                                pet.weightHistory[pet.weightHistory.length - 1] &&
-                                `${pet.weightHistory[pet.weightHistory.length - 1]!.value} ${t.kg}`
-                            ].filter(Boolean).join(' · ')} */}
                             {[
                                 pet.breed,
                                 pet.age && `${pet.age} ${typeof t.years === 'function' ? t.years(Number(pet.age)) : t.years}`,
