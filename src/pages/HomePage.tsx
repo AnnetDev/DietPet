@@ -25,7 +25,7 @@ function PetCard({
     onDuplicate,
 }: {
     pet: Pet
-    t: typeof translations.ru
+    t: typeof translations.ru | typeof translations.en
     onOpen: () => void
     onDelete: () => void
     onDuplicate: () => void
