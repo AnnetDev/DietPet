@@ -32,6 +32,12 @@ export const translations = {
         breedPlaceholder: 'e.g. Domestic cat',
         cancel: 'Cancel',
         save: 'Save',
+        addWeight: 'Add Weight',
+        date: 'Date',
+        history: 'History',
+        month: 'Month',
+        year: 'Year',
+        all: 'All',
     },
     ru: {
         appName: "DietPet",
@@ -72,7 +78,14 @@ export const translations = {
         petNamePlaceholder: 'Введите имя питомца',
         breedPlaceholder: 'например, Обычный кот',
         cancel: 'Отмена',
-        save: 'Сохранить',    },
+        save: 'Сохранить',
+        addWeight: 'Записать вес',
+        date: 'Дата',
+        history: 'История',
+        month: 'Месяц',
+        year: 'Год',
+        all: 'Всё время',
+    },
 };
 
 export type TranslationKey = keyof typeof translations.en;

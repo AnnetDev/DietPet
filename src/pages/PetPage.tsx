@@ -73,6 +73,32 @@ export default function PetPage() {
                 </div>
             </div>
 
+            {/* Info cards */}
+            <div className="px-5 py-4 flex gap-3">
+                <button
+                    onClick={() => navigate(`/pet/${id}/weight`)}
+                    className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
+                >
+                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1">
+                        ⚖️ {t.weight}
+                    </div>
+                    <div className="text-2xl font-black text-primary">
+                        {pet.weightHistory[pet.weightHistory.length - 1]?.value || '—'} {t.kg}
+                    </div>
+                </button>
+
+                <button
+                    className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
+                >
+                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1">
+                        🍂 {t.diagnosis}
+                    </div>
+                    <div className="text-base font-black text-primary">
+                        {pet.diagnosis || t.notSpecified}
+                    </div>
+                </button>
+            </div>
+
             <div className="p-5 text-muted font-semibold">
                 Страница питомца — в разработке 🐾
             </div>
