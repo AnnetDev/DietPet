@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+:root {
+  /* Light */
+
+  /* backgrounds */
+  --bg-app:        #F5EDE0;
+  --bg-card:       #FFFFFF;
+  --bg-hero:       #C17A3A;
+  --bg-hero-soft:  #E8A96A;
+  --bg-tag:        #FEF3E2;
+  --bg-today:      #C17A3A;
+
+  /* Text */
+  --text-primary:  #2C1810;
+  --text-muted:    #9A7B6A;
+  --text-on-hero:  #FFFFFF;
+
+  /* Accent */
+  --accent:        #C17A3A;
+  --accent-light:  #E8A96A;
+  --accent-soft:   #FEF3E2;
+
+  /* Borders */
+  --border:        #EDE0D0;
+
+  /* Icons */
+  --color-dry:      #C17A3A;
+  --color-wet:      #5B9BD5;
+  --color-medicine: #E8A96A;
+  --color-other:    #9A7B6A;
+}
+
+/* Dark*/
+[data-theme="dark"] {
+  --bg-app:        #1A1208;
+  --bg-card:       #2C1F10;
+  --bg-hero:       #8B4E1A;
+  --bg-hero-soft:  #A86030;
+  --bg-tag:        #3A2510;
+  --bg-today:      #8B4E1A;
+
+  --text-primary:  #F5EDE0;
+  --text-muted:    #C4A882;
+  --text-on-hero:  #FFFFFF;
+
+  --accent:        #E8A96A;
+  --accent-light:  #F5C896;
+  --accent-soft:   #3A2510;
+
+  --border:        #3A2510;
+}
+
+/* Basic styles */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+}

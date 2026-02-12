@@ -1,9 +1,20 @@
-function App() {
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useTheme } from './store/useTheme'
+import SplashPage from './pages/SplashPage'
+import HomePage from './pages/HomePage'
+import PetPage from './pages/PetPage'
+
+export default function App() {
+  useTheme()
+
   return (
-    <div className="min-h-screen bg-[#F5EDE0] flex items-center justify-center">
-      <h1 className="text-3xl font-bold text-[#C17A3A]">DietPet 🐾</h1>
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/splash" replace />} />
+        <Route path="/splash" element={<SplashPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/pet/:id" element={<PetPage />} />
+      </Routes>
+    </HashRouter>
   )
 }
-
-export default App
