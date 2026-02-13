@@ -4,6 +4,7 @@ import SplashPage from './pages/SplashPage'
 import HomePage from './pages/HomePage'
 import PetPage from './pages/PetPage'
 import WeightPage from './pages/WeightPage'
+import DiagnosisPage from './pages/DiagnosisPage'
 
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/pet/:id" element={<PetPage />} />
         <Route path="/pet/:id/weight" element={<WeightPage />} />
+        <Route path="/pet/:id/diagnosis" element={<DiagnosisPage />} />
       </Routes>
     </HashRouter>
   )

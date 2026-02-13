@@ -88,6 +88,7 @@ export default function PetPage() {
                 </button>
 
                 <button
+                    onClick={() => navigate(`/pet/${id}/diagnosis`)}
                     className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
                 >
                     <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1">

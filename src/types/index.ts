@@ -19,10 +19,11 @@ export interface MedCourse {
     name: string
     amount: number
     unit: DietItemUnit
+    timesPerDay: number
     startDate: string
     endDate: string
     notes: string
-}
+  }
 
 export interface WeightEntry {
     date: string
