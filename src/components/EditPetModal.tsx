@@ -43,7 +43,6 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
             photo,
         }
 
-        // Если вес изменился — добавляем новую запись
         if (weight && parseFloat(weight) !== lastWeight?.value) {
             updates.weightHistory = [
                 ...pet.weightHistory,

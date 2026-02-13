@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { Pet } from '../types'
-import { ChevronLeft, Dot, SquarePen } from 'lucide-react'
+import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell } from 'lucide-react'
 import EditPetModal from '../components/EditPetModal'
 
 export default function PetPage() {
@@ -79,8 +79,8 @@ export default function PetPage() {
                     onClick={() => navigate(`/pet/${id}/weight`)}
                     className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
                 >
-                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1">
-                        ⚖️ {t.weight}
+                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1 flex gap-2">
+                        <Dumbbell size={14}/> {t.weight}
                     </div>
                     <div className="text-2xl font-black text-primary">
                         {pet.weightHistory[pet.weightHistory.length - 1]?.value || '—'} {t.kg}
@@ -88,14 +88,21 @@ export default function PetPage() {
                 </button>
 
                 <button
+                    onClick={() => navigate(`/pet/${id}/diagnosis`)}
                     className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
                 >
-                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1">
-                        🍂 {t.diagnosis}
+                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1 flex gap-2">
+                        <Pill size={14}/> {t.medicalCard}
                     </div>
-                    <div className="text-base font-black text-primary">
-                        {pet.diagnosis || t.notSpecified}
-                    </div>
+                    {pet.diagnoses && pet.diagnoses.length > 0 ? (
+                        <div className="text-sm font-black text-primary line-clamp-2">
+                            {pet.diagnoses.map(d => d.name).join(', ')}
+                        </div>
+                    ) : (
+                        <div className="text-sm font-bold text-muted italic">
+                            {t.notSpecified}
+                        </div>
+                    )}
                 </button>
             </div>
 
