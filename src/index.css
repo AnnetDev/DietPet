@@ -76,3 +76,11 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
+/* Fix iOS date input overflow */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  min-width: 0;
+  max-width: 100%;
+}
