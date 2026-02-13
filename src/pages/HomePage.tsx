@@ -6,6 +6,7 @@ import { Pet } from '../types'
 import { MoreHorizontal, Plus, Copy, Trash2 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { Pill } from 'lucide-react'
 
 function getDayAndWeek(startDate: string | null) {
     if (!startDate) return null
@@ -100,10 +101,9 @@ function PetCard({
                             ].filter(Boolean).join(' · ')}
 
                         </div>
-                        {pet.diagnosis && (
-                            <span className="inline-block mt-1.5 text-xs font-bold
-                bg-tag text-accent px-2 py-0.5 rounded-full">
-                                🍂 {pet.diagnosis}
+                        {pet.diagnoses && pet.diagnoses.length > 0 && (
+                            <span className="mt-1.5 text-xs font-bold bg-tag text-accent px-2 py-0.5 rounded-full flex gap-2">
+                                <Pill size={14}/>{pet.diagnoses.map(d => d.name).join(', ')}
                             </span>
                         )}
                     </div>
@@ -146,6 +146,7 @@ export default function HomePage() {
             breed: '',
             age: '',
             diagnosis: '',
+            diagnoses: [],  // добавь эту строку
             photo: null,
             dietStartDate: null,
             dietSchedule: [],
@@ -188,7 +189,7 @@ export default function HomePage() {
             </div>
 
             {/* Footer */}
-            <Footer/>
+            <Footer />
         </div>
     )
 }

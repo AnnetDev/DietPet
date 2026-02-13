@@ -7,6 +7,13 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
         breed: 'Обычный кот',
         age: '11',
         diagnosis: 'МКБ',
+        diagnoses: [
+            {
+                id: '1',
+                name: 'МКБ (струвиты)',
+                dateAdded: '2026-01-12'
+            }
+        ],
         photo: './petExample.webp',
         dietStartDate: '2026-02-03',
         dietSchedule: [
@@ -69,6 +76,13 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
         breed: 'Domestic cat',
         age: '11',
         diagnosis: 'Urolithiasis',
+        diagnoses: [
+            {
+                id: '1',
+                name: 'Urolithiasis (struvite)',
+                dateAdded: '2026-01-12'
+            }
+        ],
         photo: './petExample.webp',
         dietStartDate: '2026-02-03',
         dietSchedule: [

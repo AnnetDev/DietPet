@@ -55,6 +55,13 @@ export const translations = {
         daysLeft: 'left',
         completed: 'completed',
         noNotes: 'No notes',
+        editDiagnosis: 'Edit Diagnosis',
+        editNotes: 'Edit Notes',
+        diagnosisPlaceholder: 'e.g., Urolithiasis',
+        medicalCard: 'Medical Card',
+        diagnoses: 'Diagnoses',
+        addDiagnosis: 'Add Diagnosis',
+        add: 'Add',
     },
     ru: {
         appName: "DietPet",
@@ -119,9 +126,14 @@ export const translations = {
         daysLeft: 'осталось',
         completed: 'завершено',
         noNotes: 'Нет заметок',
+        editDiagnosis: 'Изменить диагноз',
+        editNotes: 'Изменить заметки',
+        diagnosisPlaceholder: 'например, МКБ',
+        medicalCard: 'Медкарта',
+    diagnoses: 'Диагнозы',
+    addDiagnosis: 'Добавить диагноз',
+    add: 'Добавить',
     },
 };
 
 export type TranslationKey = keyof typeof translations.en;
-
-

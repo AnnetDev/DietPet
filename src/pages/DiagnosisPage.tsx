@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react'
-import { MedCourse } from '../types'
+import { MedCourse, Diagnosis } from '../types'
+import { Pill, HeartPlus } from 'lucide-react'
 
 export default function DiagnosisPage() {
     const { id } = useParams()
@@ -14,6 +15,12 @@ export default function DiagnosisPage() {
 
     const [showAddModal, setShowAddModal] = useState(false)
     const [editingCourse, setEditingCourse] = useState<MedCourse | null>(null)
+
+    const [showAddDiagnosisModal, setShowAddDiagnosisModal] = useState(false)
+    const [newDiagnosisName, setNewDiagnosisName] = useState('')
+
+    const [showEditNotesModal, setShowEditNotesModal] = useState(false)
+    const [editNotes, setEditNotes] = useState('')
 
     const [courseName, setCourseName] = useState('')
     const [amount, setAmount] = useState('')
@@ -29,16 +36,46 @@ export default function DiagnosisPage() {
     }
 
     const medCourses = pet.medCourses || []
+    const diagnoses = pet.diagnoses || []
 
-    // Активные курсы (не закончились)
     const activeCourses = medCourses.filter(course =>
         new Date(course.endDate) >= new Date()
     )
 
-    // Прошлые курсы
     const pastCourses = medCourses.filter(course =>
         new Date(course.endDate) < new Date()
     )
+
+    const handleAddDiagnosis = () => {
+        if (!newDiagnosisName.trim()) return
+
+        const newDiagnosis: Diagnosis = {
+            id: `diagnosis_${crypto.randomUUID()}`,
+            name: newDiagnosisName.trim(),
+            dateAdded: new Date().toISOString().split('T')[0]
+        }
+
+        updatePet({ ...pet, diagnoses: [...diagnoses, newDiagnosis] })
+        setNewDiagnosisName('')
+        setShowAddDiagnosisModal(false)
+    }
+
+    const handleDeleteDiagnosis = (diagnosisId: string) => {
+        updatePet({
+            ...pet,
+            diagnoses: diagnoses.filter(d => d.id !== diagnosisId)
+        })
+    }
+
+    const openEditNotesModal = () => {
+        setEditNotes(pet.notes || '')
+        setShowEditNotesModal(true)
+    }
+
+    const handleSaveNotes = () => {
+        updatePet({ ...pet, notes: editNotes })
+        setShowEditNotesModal(false)
+    }
 
     const openAddModal = () => {
         setCourseName('')
@@ -56,7 +93,6 @@ export default function DiagnosisPage() {
         setCourseName(course.name)
         setAmount(course.amount.toString())
         setUnit(course.unit)
-
         setTimesPerDay(course.timesPerDay.toString())
         setStartDate(course.startDate)
         setEndDate(course.endDate)
@@ -130,22 +166,63 @@ export default function DiagnosisPage() {
                     </button>
                 </div>
 
-                <h1 className="text-2xl font-black text-on-hero mb-2">
-                    {pet.diagnosis || t.diagnosis}
+                <h1 className="text-2xl font-black text-on-hero mb-2 flex gap-2 items-center">
+                    <HeartPlus size={26}/> {t.medicalCard}
                 </h1>
             </div>
 
             {/* Content */}
             <div className="px-5 py-4 space-y-6">
 
-                {/* Diagnosis info */}
-                <div className="bg-card rounded-2xl p-4 shadow-sm">
-                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
-                        {t.diagnosis}
+                {/* Diagnoses */}
+                <div>
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="text-xs font-bold text-muted uppercase tracking-wider">
+                            {t.diagnoses}
+                        </h2>
+                        <button
+                            onClick={() => setShowAddDiagnosisModal(true)}
+                            className="text-xs font-bold text-accent flex items-center gap-1"
+                        >
+                            <Plus size={14} />
+                            {t.add}
+                        </button>
                     </div>
-                    <div className="text-lg font-black text-primary">
-                        {pet.diagnosis || t.notSpecified}
-                    </div>
+
+                    {diagnoses.length > 0 ? (
+                        <div className="space-y-2">
+                            {diagnoses.map(diagnosis => (
+                                <div key={diagnosis.id} className="bg-card rounded-xl p-4 shadow-sm flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <div className="font-black text-primary text-base flex gap-2 items-center">
+                                            <Pill size={16}/> {diagnosis.name}
+                                        </div>
+                                        <div className="text-xs text-muted mt-1">
+                                            {new Date(diagnosis.dateAdded).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                                year: 'numeric'
+                                            })}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleDeleteDiagnosis(diagnosis.id)}
+                                        className="w-8 h-8 rounded-full bg-app flex items-center justify-center text-red-500"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setShowAddDiagnosisModal(true)}
+                            className="w-full bg-card rounded-xl p-4 border-2 border-dashed border-border flex items-center justify-center gap-2 text-accent text-sm font-bold"
+                        >
+                            <Plus size={20} />
+                            {t.addDiagnosis}
+                        </button>
+                    )}
                 </div>
 
                 {/* Active courses */}
@@ -207,7 +284,6 @@ export default function DiagnosisPage() {
                                             </div>
                                         </div>
 
-                                        {/* Progress bar */}
                                         <div>
                                             <div className="flex justify-between text-xs text-muted mb-1">
                                                 <span>{t.progress}</span>
@@ -233,7 +309,6 @@ export default function DiagnosisPage() {
                     </div>
                 )}
 
-                {/* Add button if no active courses */}
                 {activeCourses.length === 0 && (
                     <button
                         onClick={openAddModal}
@@ -244,7 +319,6 @@ export default function DiagnosisPage() {
                     </button>
                 )}
 
-                {/* Past courses */}
                 {pastCourses.length > 0 && (
                     <div>
                         <h2 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
@@ -285,8 +359,16 @@ export default function DiagnosisPage() {
 
                 {/* Notes */}
                 <div className="bg-card rounded-2xl p-4 shadow-sm">
-                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
-                        📝 {t.notes}
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs font-bold text-muted uppercase tracking-wide">
+                            📝 {t.notes}
+                        </div>
+                        <button
+                            onClick={openEditNotesModal}
+                            className="w-7 h-7 rounded-full bg-app flex items-center justify-center text-muted"
+                        >
+                            <Edit2 size={12} />
+                        </button>
                     </div>
                     <div className="text-sm text-primary leading-relaxed">
                         {pet.notes || t.noNotes}
@@ -295,7 +377,7 @@ export default function DiagnosisPage() {
 
             </div>
 
-            {/* Add/Edit Modal */}
+            {/* Add/Edit Course Modal - без изменений */}
             {showAddModal && (
                 <>
                     <div
@@ -308,7 +390,6 @@ export default function DiagnosisPage() {
                         </h2>
 
                         <div className="space-y-4">
-                            {/* Name */}
                             <div>
                                 <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
                                     {t.medicineName}
@@ -322,7 +403,6 @@ export default function DiagnosisPage() {
                                 />
                             </div>
 
-                            {/* Amount + Unit */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
@@ -353,7 +433,6 @@ export default function DiagnosisPage() {
                                 </div>
                             </div>
 
-                            {/* Times per day */}
                             <div>
                                 <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
                                     {t.timesPerDay}
@@ -367,7 +446,6 @@ export default function DiagnosisPage() {
                                 />
                             </div>
 
-                            {/* Dates */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
@@ -393,7 +471,6 @@ export default function DiagnosisPage() {
                                 </div>
                             </div>
 
-                            {/* Notes */}
                             <div>
                                 <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
                                     {t.notes}
@@ -419,6 +496,91 @@ export default function DiagnosisPage() {
                                 onClick={handleSave}
                                 disabled={!courseName || !amount || !endDate}
                                 className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold disabled:opacity-50"
+                            >
+                                {t.save}
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Add Diagnosis Modal */}
+            {showAddDiagnosisModal && (
+                <>
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40"
+                        onClick={() => setShowAddDiagnosisModal(false)}
+                    />
+                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
+                        <h2 className="text-xl font-black text-primary mb-6">{t.addDiagnosis}</h2>
+
+                        <div>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
+                                {t.diagnosis}
+                            </label>
+                            <input
+                                type="text"
+                                value={newDiagnosisName}
+                                onChange={(e) => setNewDiagnosisName(e.target.value)}
+                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                placeholder={t.diagnosisPlaceholder}
+                                autoFocus
+                            />
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setShowAddDiagnosisModal(false)}
+                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleAddDiagnosis}
+                                disabled={!newDiagnosisName.trim()}
+                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold disabled:opacity-50"
+                            >
+                                {t.add}
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Edit Notes Modal */}
+            {showEditNotesModal && (
+                <>
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40"
+                        onClick={() => setShowEditNotesModal(false)}
+                    />
+                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
+                        <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
+
+                        <div>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
+                                {t.notes}
+                            </label>
+                            <textarea
+                                value={editNotes}
+                                onChange={(e) => setEditNotes(e.target.value)}
+                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                                rows={5}
+                                placeholder={t.notesPlaceholder}
+                                autoFocus
+                            />
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setShowEditNotesModal(false)}
+                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleSaveNotes}
+                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
                             >
                                 {t.save}
                             </button>
