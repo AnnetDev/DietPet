@@ -167,7 +167,7 @@ export default function DiagnosisPage() {
                 </div>
 
                 <h1 className="text-2xl font-black text-on-hero mb-2 flex gap-2 items-center">
-                    <HeartPlus size={26}/> {t.medicalCard}
+                    <HeartPlus size={28}/> {t.medicalCard}
                 </h1>
             </div>
 
@@ -465,6 +465,7 @@ export default function DiagnosisPage() {
                                     <input
                                         type="date"
                                         value={endDate}
+                                        placeholder='DD-MM-YYYY'
                                         onChange={(e) => setEndDate(e.target.value)}
                                         className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                     />

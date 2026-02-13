@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, Plus, Trash2, Dumbbell } from 'lucide-react'
 import WeightChart from '../components/WeightChart'
 
 type TimeRange = 'week' | 'month' | 'year' | 'all'
@@ -97,7 +97,7 @@ export default function WeightPage() {
 
                 </div>
 
-                <h1 className="text-2xl font-black text-on-hero mb-3">⚖️ {t.weight}</h1>
+                <h1 className="text-2xl font-black text-on-hero mb-3 flex gap-2 items-center"> <Dumbbell size={28}/> {t.weight}</h1>
 
                 {/* Current weight + trend */}
                 <div className="flex items-center justify-between gap-3">
