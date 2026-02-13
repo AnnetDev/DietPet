@@ -77,10 +77,21 @@ body {
   overflow-x: hidden;
 }
 
-/* Fix iOS date input overflow */
+/* Fix iOS input styles */
 input[type="date"],
 input[type="time"],
-input[type="datetime-local"] {
-  min-width: 0;
-  max-width: 100%;
+input[type="datetime-local"],
+input[type="number"],
+input[type="text"],
+textarea,
+select {
+  font-size: 16px !important; /* iOS не зумит если шрифт >= 16px */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Fix modal overflow on iOS */
+.modal-container {
+  max-width: calc(100vw - 32px);
+  overflow-x: hidden;
 }

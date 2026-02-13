@@ -203,7 +203,7 @@ export default function WeightPage() {
                                     type="date"
                                     value={newDate}
                                     onChange={(e) => setNewDate(e.target.value)}
-                                    className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent min-w-0"
+                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent min-w-0 modal-container"
                                 />
                             </div>
 
@@ -216,7 +216,7 @@ export default function WeightPage() {
                                     step="0.1"
                                     value={newWeight}
                                     onChange={(e) => setNewWeight(e.target.value)}
-                                    className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                     placeholder="12.5"
                                     autoFocus
                                 />

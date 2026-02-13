@@ -398,7 +398,7 @@ export default function DiagnosisPage() {
                                     type="text"
                                     value={courseName}
                                     onChange={(e) => setCourseName(e.target.value)}
-                                    className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                     placeholder={t.medicineNamePlaceholder}
                                 />
                             </div>
@@ -413,7 +413,7 @@ export default function DiagnosisPage() {
                                         step="0.5"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
-                                        className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                        className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                         placeholder="1"
                                     />
                                 </div>
@@ -441,7 +441,7 @@ export default function DiagnosisPage() {
                                     type="number"
                                     value={timesPerDay}
                                     onChange={(e) => setTimesPerDay(e.target.value)}
-                                    className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                     placeholder="2"
                                 />
                             </div>
@@ -455,7 +455,7 @@ export default function DiagnosisPage() {
                                         type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
-                                        className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent min-w-0"
+                                        className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent min-w-0 modal-container"
                                     />
                                 </div>
                                 <div>
@@ -466,7 +466,7 @@ export default function DiagnosisPage() {
                                         type="date"
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
-                                        className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                        className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                     />
                                 </div>
                             </div>
@@ -522,7 +522,7 @@ export default function DiagnosisPage() {
                                 type="text"
                                 value={newDiagnosisName}
                                 onChange={(e) => setNewDiagnosisName(e.target.value)}
-                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                                 placeholder={t.diagnosisPlaceholder}
                                 autoFocus
                             />

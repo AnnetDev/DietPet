@@ -110,7 +110,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                            className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                             placeholder={t.petNamePlaceholder}
                         />
                     </div>
@@ -124,7 +124,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
                             type="text"
                             value={breed}
                             onChange={(e) => setBreed(e.target.value)}
-                            className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                            className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                             placeholder={t.breedPlaceholder}
                         />
                     </div>
@@ -138,7 +138,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
                             type="text"
                             value={age}
                             onChange={(e) => setAge(e.target.value)}
-                            className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                            className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                             placeholder="10"
                         />
                     </div>
@@ -153,7 +153,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
                             step="0.1"
                             value={weight}
                             onChange={(e) => setWeight(e.target.value)}
-                            className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                            className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
                             placeholder="12.5"
                         />
                     </div>
