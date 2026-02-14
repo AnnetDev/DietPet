@@ -69,10 +69,10 @@ export default function DietPage() {
         setEditingItemId(null)
     }
 
-    const openEditDateModal = () => {
-        setEditStartDate(pet.dietStartDate || new Date().toISOString().split('T')[0])
-        setShowEditDateModal(true)
-    }
+    // const openEditDateModal = () => {
+    //     setEditStartDate(pet.dietStartDate || new Date().toISOString().split('T')[0])
+    //     setShowEditDateModal(true)
+    // }
 
     const handleSaveDate = () => {
         updatePet({ ...pet, dietStartDate: editStartDate })
