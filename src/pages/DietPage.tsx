@@ -208,7 +208,7 @@ export default function DietPage() {
     const handleDeleteWeek = (weekNum: number) => {
         const updatedSchedule = dietSchedule
             .filter(w => w.week !== weekNum)
-            .map((w, index) => ({ ...w, week: index + 1 })) // Пересчитываем номера недель
+            .map((w, index) => ({ ...w, week: index + 1 }))
 
         updatePet({ ...pet, dietSchedule: updatedSchedule })
     }

@@ -83,7 +83,7 @@ export default function NewPetPage() {
             name: name || t.newPet,
             breed,
             age,
-            diagnosis: '', // старое поле
+            diagnosis: '',
             diagnoses: diagnoses.map((d, i) => ({
                 id: `diag_${i}`,
                 name: d,

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { Pet } from '../types'
-import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell, Plus, Trash2, RotateCcw } from 'lucide-react'
+import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell, Plus, Trash2, RotateCcw, Edit2 } from 'lucide-react'
 import EditPetModal from '../components/EditPetModal'
 import Layout from '../components/Layout'
 
@@ -27,6 +27,8 @@ export default function PetPage() {
     const pet = pets.find(p => p.id === id)
     const [showDeletedDiets, setShowDeletedDiets] = useState(false)
     const t = translations[language]
+    const [showEditNotesModal, setShowEditNotesModal] = useState(false)
+    const [editNotes, setEditNotes] = useState('')
 
 
     if (!pet) {
@@ -58,6 +60,16 @@ export default function PetPage() {
         const fourteenDays = 14 * 24 * 60 * 60 * 1000
         const timeLeft = fourteenDays - (now - deleted)
         return Math.ceil(timeLeft / (1000 * 60 * 60 * 24))
+    }
+
+    const openEditNotesModal = () => {
+        setEditNotes(pet.notes || '')
+        setShowEditNotesModal(true)
+    }
+
+    const handleSaveNotes = () => {
+        updatePet({ ...pet, notes: editNotes })
+        setShowEditNotesModal(false)
     }
 
     return (
@@ -285,6 +297,70 @@ export default function PetPage() {
                         onSave={handleSave}
                         onClose={() => setEditModalOpen(false)}
                     />
+                )}
+
+                {/* Notes block */}
+                <div className="px-5 pb-4">
+                    <div className="bg-card rounded-2xl p-4 shadow-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-xs font-bold text-muted uppercase tracking-wide">
+                                📝 {t.notes}
+                            </div>
+                            <button
+                                onClick={openEditNotesModal}
+                                className="w-7 h-7 rounded-full bg-app flex items-center justify-center text-muted"
+                            >
+                                <Edit2 size={12} />
+                            </button>
+                        </div>
+                        <div className="text-sm text-primary leading-relaxed">
+                            {pet.notes || (
+                                <span className="text-muted italic">{t.noNotes}</span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Edit Notes Modal */}
+                {showEditNotesModal && (
+                    <>
+                        <div
+                            className="fixed inset-0 bg-black/50 z-40"
+                            onClick={() => setShowEditNotesModal(false)}
+                        />
+                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl modal-container">
+                            <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
+
+                            <div>
+                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
+                                    {t.notes}
+                                </label>
+                                <textarea
+                                    value={editNotes}
+                                    onChange={(e) => setEditNotes(e.target.value)}
+                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                                    rows={5}
+                                    placeholder={t.notesPlaceholder}
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="flex gap-3 mt-6">
+                                <button
+                                    onClick={() => setShowEditNotesModal(false)}
+                                    className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                                >
+                                    {t.cancel}
+                                </button>
+                                <button
+                                    onClick={handleSaveNotes}
+                                    className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
+                                >
+                                    {t.save}
+                                </button>
+                            </div>
+                        </div>
+                    </>
                 )}
             </div>
         </Layout>

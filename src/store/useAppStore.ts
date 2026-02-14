@@ -19,7 +19,6 @@ function loadState(): AppState {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (raw) {
             const parsed = JSON.parse(raw)
-            // Очистка старых удалённых при загрузке
             const now = new Date().getTime()
             const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000)
             const fourteenDaysAgo = now - (14 * 24 * 60 * 60 * 1000)
