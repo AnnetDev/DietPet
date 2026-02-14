@@ -307,7 +307,7 @@ export default function NewPetPage() {
     const progressPercent = ((currentStepIndex + 1) / steps.length) * 100
 
     return (
-        <Layout>
+        <Layout showFooter={false}>
             <div className="min-h-screen bg-app flex flex-col">
 
                 {/* Header */}
@@ -345,7 +345,7 @@ export default function NewPetPage() {
                 </div>
 
                 {/* Footer buttons */}
-                <div className="px-5 pb-8 pt-4 border-t border-border bg-card">
+                <div className="px-5 pb-8 pt-4 border-t border-border bg-card fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto">
                     <div className="flex gap-3">
                         {step !== 'basic' && step !== 'diet' && (
                             <button

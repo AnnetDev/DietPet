@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { Pet } from '../types'
-import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell } from 'lucide-react'
+import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell, Plus, Trash2, RotateCcw } from 'lucide-react'
 import EditPetModal from '../components/EditPetModal'
 import Layout from '../components/Layout'
 
@@ -22,11 +22,12 @@ function getDayAndWeek(startDate: string | null) {
 export default function PetPage() {
     const { id } = useParams()
     const navigate = useNavigate()
-    const { pets, language, updatePet } = useAppStore()
-    const pet = pets.find(p => p.id === id)
     const [editModalOpen, setEditModalOpen] = useState(false)
-
+    const { pets, deletedDiets, language, updatePet, restoreDiet, permanentlyDeleteDietByDate } = useAppStore()
+    const pet = pets.find(p => p.id === id)
+    const [showDeletedDiets, setShowDeletedDiets] = useState(false)
     const t = translations[language]
+
 
     if (!pet) {
         navigate('/home', { replace: true })
@@ -47,6 +48,16 @@ export default function PetPage() {
             case 'natural': return '🥩'
             default: return '📦'
         }
+    }
+
+    const petDeletedDiets = deletedDiets.filter(d => d.petId === id)
+
+    const getDaysUntilPermanentDelete = (deletedAt: string) => {
+        const deleted = new Date(deletedAt).getTime()
+        const now = new Date().getTime()
+        const fourteenDays = 14 * 24 * 60 * 60 * 1000
+        const timeLeft = fourteenDays - (now - deleted)
+        return Math.ceil(timeLeft / (1000 * 60 * 60 * 24))
     }
 
     return (
@@ -160,7 +171,7 @@ export default function PetPage() {
                 )}
 
                 {/* Diet card */}
-                {pet.dietSchedule && pet.dietSchedule.length > 0 && (
+                {pet.dietSchedule && pet.dietSchedule.length > 0 ? (
                     <div className="px-5 pb-4">
                         <button
                             onClick={() => navigate(`/pet/${id}/diet`)}
@@ -196,6 +207,73 @@ export default function PetPage() {
                                 </div>
                             )}
                         </button>
+                    </div>
+                ) : (
+                    <div className="px-5 pb-4">
+                        <button
+                            onClick={() => navigate(`/pet/${id}/diet`)}
+                            className="w-full bg-card rounded-2xl p-5 border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-accent active:scale-95 transition-transform"
+                        >
+                            <Plus size={28} strokeWidth={2} />
+                            <span className="text-sm font-bold">{t.createDiet}</span>
+                        </button>
+                    </div>
+                )}
+
+                {petDeletedDiets.length > 0 && (
+                    <div className="px-5 pb-4">
+                        <button
+                            onClick={() => setShowDeletedDiets(!showDeletedDiets)}
+                            className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-muted py-2 opacity-60"
+                        >
+                            <Trash2 size={14} />
+                            <span>{t.deletedDiets} ({petDeletedDiets.length})</span>
+                            <span className={`transition-transform ${showDeletedDiets ? 'rotate-180' : ''}`}>▼</span>
+                        </button>
+
+                        {showDeletedDiets && (
+                            <div className="mt-3 space-y-2 opacity-60">
+                                {petDeletedDiets.map(diet => {
+                                    const daysLeft = getDaysUntilPermanentDelete(diet.deletedAt)
+                                    return (
+                                        <div key={diet.deletedAt} className="bg-card rounded-xl p-3 border border-border">
+                                            <div className="flex items-start gap-3">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="font-bold text-sm text-primary">
+                                                        🍽️ {t.diet} · {diet.dietSchedule.length} {t.weeks}
+                                                    </div>
+                                                    <div className="text-xs text-muted mt-0.5">
+                                                        {t.deletesIn} {daysLeft} {t.days}
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => restoreDiet(diet.deletedAt)}
+                                                        className="w-8 h-8 rounded-full bg-app flex items-center justify-center text-accent"
+                                                        title={t.restore}
+                                                    >
+                                                        <RotateCcw size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            if (confirm(language === 'ru'
+                                                                ? 'Удалить диету навсегда?'
+                                                                : 'Permanently delete diet?')) {
+                                                                permanentlyDeleteDietByDate(diet.deletedAt)
+                                                            }
+                                                        }}
+                                                        className="w-8 h-8 rounded-full bg-app flex items-center justify-center text-red-500"
+                                                        title={t.deletePermanently}
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
                 )}
 

@@ -22,7 +22,7 @@ function getDayAndWeek(startDate: string | null) {
 export default function DietPage() {
     const { id } = useParams()
     const navigate = useNavigate()
-    const { pets, language, updatePet } = useAppStore()
+    const { pets, language, updatePet, deleteDiet } = useAppStore()
     const pet = pets.find(p => p.id === id)
     const t = translations[language]
 
@@ -42,9 +42,11 @@ export default function DietPage() {
     const [editingItemId, setEditingItemId] = useState<string | null>(null)
     const [editItemName, setEditItemName] = useState('')
     const [editItemAmount, setEditItemAmount] = useState('')
+    const [showPastWeeks, setShowPastWeeks] = useState(false)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const [showEditDateModal, setShowEditDateModal] = useState(false)
     const [editStartDate, setEditStartDate] = useState('')
-    const [showPastWeeks, setShowPastWeeks] = useState(false)
+
 
 
     if (!pet) {
@@ -79,6 +81,11 @@ export default function DietPage() {
     const handleSaveDate = () => {
         updatePet({ ...pet, dietStartDate: editStartDate })
         setShowEditDateModal(false)
+    }
+
+    const handleDeleteDiet = () => {
+        deleteDiet(pet.id)
+        navigate(`/pet/${id}`)
     }
 
 
@@ -232,8 +239,14 @@ export default function DietPage() {
                         ) : (
                             <div className="flex gap-2">
                                 <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="px-1 py-1.5 rounded-full text-sm font-bold text-on-hero"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                                <button
                                     onClick={handleCancelEdit}
-                                    className="px-3 py-1.5 rounded-full text-sm font-bold text-on-hero "
+                                    className="px-3 py-1.5 rounded-full text-sm font-bold text-on-hero"
                                 >
                                     {t.cancel}
                                 </button>
@@ -251,7 +264,7 @@ export default function DietPage() {
                         🍽️ {t.diet}
                     </h1>
 
-                    {pet.dietStartDate && (
+                    {pet.dietStartDate ? (
                         <div className="flex items-center gap-2">
                             <div className="text-sm text-on-hero">
                                 {t.startedOn} {new Date(pet.dietStartDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
@@ -260,15 +273,20 @@ export default function DietPage() {
                                     year: 'numeric'
                                 })}
                             </div>
-                            {editMode && (
-                                <button
-                                    onClick={openEditDateModal}
-                                    className="w-6 h-6 rounded-full bg-on-hero/20 flex items-center justify-center text-on-hero"
-                                >
-                                    <Edit2 size={12} />
-                                </button>
-                            )}
+                            <button
+                                onClick={openEditDateModal}
+                                className="w-6 h-6 rounded-full bg-on-hero/20 flex items-center justify-center text-on-hero"
+                            >
+                                <Edit2 size={12} />
+                            </button>
                         </div>
+                    ) : (
+                        <button
+                            onClick={openEditDateModal}
+                            className="text-sm text-on-hero underline opacity-75"
+                        >
+                            {t.setStartDate}
+                        </button>
                     )}
                 </div>
 
@@ -762,6 +780,36 @@ export default function DietPage() {
                         </>
                     )
                 }
+
+                {/* Delete Diet Confirmation */}
+                {showDeleteConfirm && (
+                    <>
+                        <div
+                            className="fixed inset-0 bg-black/50 z-40"
+                            onClick={() => setShowDeleteConfirm(false)}
+                        />
+                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
+                            <h2 className="text-xl font-black text-primary mb-4">{t.deleteDietConfirm}</h2>
+                            <p className="text-sm text-muted mb-6">
+                                {t.deleteDietExplanation}
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                    className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                                >
+                                    {t.cancel}
+                                </button>
+                                <button
+                                    onClick={handleDeleteDiet}
+                                    className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold"
+                                >
+                                    {t.delete}
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div >
         </Layout>
 

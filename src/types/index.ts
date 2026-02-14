@@ -23,7 +23,7 @@ export interface MedCourse {
     startDate: string
     endDate: string
     notes: string
-  }
+}
 
 export interface WeightEntry {
     date: string
@@ -34,26 +34,40 @@ export interface Diagnosis {
     id: string
     name: string
     dateAdded: string
-  }
+}
 
 export interface Pet {
     id: string
     name: string
     breed: string
     age: string
-    diagnosis: string              
-    diagnoses: Diagnosis[]         
+    diagnosis: string
+    diagnoses: Diagnosis[]
     photo: string | null
     dietStartDate: string | null
     dietSchedule: DietWeek[]
     medCourses: MedCourse[]
     weightHistory: WeightEntry[]
     notes: string
-  }
+}
 
 export type Language = 'ru' | 'en'
+
+export interface DeletedDiet {
+    petId: string
+    petName: string
+    dietStartDate: string | null
+    dietSchedule: DietWeek[]
+    deletedAt: string
+}
 
 export interface AppState {
     pets: Pet[]
     language: Language
+    deletedPets: DeletedPet[]
+    deletedDiets: DeletedDiet[]
+}
+
+export interface DeletedPet extends Pet {
+    deletedAt: string
 }

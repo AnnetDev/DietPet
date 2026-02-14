@@ -66,7 +66,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
             />
 
             {/* Modal */}
-            <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl max-h-[85vh] overflow-y-auto ">
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
