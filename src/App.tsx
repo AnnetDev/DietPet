@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import PetPage from './pages/PetPage'
 import WeightPage from './pages/WeightPage'
 import DiagnosisPage from './pages/DiagnosisPage'
+import DietPage from './pages/DietPage'
 
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/pet/:id" element={<PetPage />} />
         <Route path="/pet/:id/weight" element={<WeightPage />} />
         <Route path="/pet/:id/diagnosis" element={<DiagnosisPage />} />
+        <Route path="/pet/:id/diet" element={<DietPage />} />
       </Routes>
     </HashRouter>
   )

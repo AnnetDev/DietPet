@@ -1,5 +1,5 @@
 export type DietItemUnit = 'г' | 'шт' | 'мл' | 'таб' | 'кап'
-export type DietItemType = 'dry' | 'wet' | 'medicine' | 'other'
+export type DietItemType = 'dry' | 'wet' | 'medicine' | 'natural' | 'other'
 
 export interface DietItem {
     id: string

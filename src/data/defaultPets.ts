@@ -29,7 +29,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
                 week: 2,
                 items: [
                     { id: '1', name: 'RC Sterilised 7+', amount: 40, unit: 'г', type: 'dry' },
-                    { id: '2', name: 'RC Urinary S/O', amount: 35, unit: 'г', type: 'dry' },
+                    { id: '2', name: 'RC Urinary S/O', amount: 40, unit: 'г', type: 'dry' },
                     { id: '3', name: 'Pro Plan пауч', amount: 3, unit: 'шт', type: 'wet' },
                 ]
             },
@@ -37,7 +37,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
                 week: 3,
                 items: [
                     { id: '1', name: 'RC Sterilised 7+', amount: 15, unit: 'г', type: 'dry' },
-                    { id: '2', name: 'RC Urinary S/O', amount: 50, unit: 'г', type: 'dry' },
+                    { id: '2', name: 'RC Urinary S/O', amount: 55, unit: 'г', type: 'dry' },
                     { id: '3', name: 'Pro Plan пауч', amount: 2, unit: 'шт', type: 'wet' },
                 ]
             },
@@ -98,7 +98,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
                 week: 2,
                 items: [
                     { id: '1', name: 'RC Sterilised 7+', amount: 40, unit: 'г', type: 'dry' },
-                    { id: '2', name: 'RC Urinary S/O', amount: 35, unit: 'г', type: 'dry' },
+                    { id: '2', name: 'RC Urinary S/O', amount: 40, unit: 'г', type: 'dry' },
                     { id: '3', name: 'Pro Plan pouch', amount: 3, unit: 'шт', type: 'wet' },
                 ]
             },
@@ -106,7 +106,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
                 week: 3,
                 items: [
                     { id: '1', name: 'RC Sterilised 7+', amount: 15, unit: 'г', type: 'dry' },
-                    { id: '2', name: 'RC Urinary S/O', amount: 50, unit: 'г', type: 'dry' },
+                    { id: '2', name: 'RC Urinary S/O', amount: 55, unit: 'г', type: 'dry' },
                     { id: '3', name: 'Pro Plan pouch', amount: 2, unit: 'шт', type: 'wet' },
                 ]
             },

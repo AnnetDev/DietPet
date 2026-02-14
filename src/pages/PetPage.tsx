@@ -6,6 +6,18 @@ import { Pet } from '../types'
 import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell } from 'lucide-react'
 import EditPetModal from '../components/EditPetModal'
 
+function getDayAndWeek(startDate: string | null) {
+    if (!startDate) return null
+    const start = new Date(startDate)
+    const today = new Date()
+    const diffMs = today.getTime() - start.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays < 0) return null
+    const day = diffDays + 1
+    const week = Math.ceil(day / 7)
+    return { day, week }
+}
+
 export default function PetPage() {
     const { id } = useParams()
     const navigate = useNavigate()
@@ -20,8 +32,20 @@ export default function PetPage() {
         return null
     }
 
+    const progress = getDayAndWeek(pet.dietStartDate)
+
     const handleSave = (updates: Partial<Pet>) => {
         updatePet({ ...pet, ...updates })
+    }
+
+    const getItemIcon = (type: string) => {
+        switch (type) {
+            case 'dry': return '🥣'
+            case 'wet': return '🍱'
+            case 'medicine': return '💊'
+            case 'natural': return '🥩'
+            default: return '📦'
+        }
     }
 
     return (
@@ -80,7 +104,7 @@ export default function PetPage() {
                     className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
                 >
                     <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1 flex gap-2">
-                        <Dumbbell size={14}/> {t.weight}
+                        <Dumbbell size={14} /> {t.weight}
                     </div>
                     <div className="text-2xl font-black text-primary">
                         {pet.weightHistory[pet.weightHistory.length - 1]?.value || '—'} {t.kg}
@@ -92,7 +116,7 @@ export default function PetPage() {
                     className="flex-1 bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
                 >
                     <div className="text-xs font-bold text-muted uppercase tracking-wide mb-1 flex gap-2">
-                        <Pill size={14}/> {t.medicalCard}
+                        <Pill size={14} /> {t.medicalCard}
                     </div>
                     {pet.diagnoses && pet.diagnoses.length > 0 ? (
                         <div className="text-sm font-black text-primary line-clamp-2">
@@ -106,9 +130,72 @@ export default function PetPage() {
                 </button>
             </div>
 
-            <div className="p-5 text-muted font-semibold">
-                Страница питомца — в разработке 🐾
-            </div>
+            {/* Today's feeding plan */}
+            {progress && pet.dietSchedule[progress.week - 1] && (
+                <div className="px-5 pb-4">
+                    <button
+                        onClick={() => navigate(`/pet/${id}/diet`)}
+                        className="w-full bg-accent rounded-2xl p-4 shadow-sm active:scale-95 transition-transform text-left"
+                    >
+                        <div className="text-xs font-bold text-on-hero uppercase tracking-wide mb-3">
+                            {t.today} · {t.day} {progress.day} · {t.week} {progress.week}
+                        </div>
+                        <div className="space-y-2">
+                            {pet.dietSchedule[progress.week - 1].items.map((item, idx) => (
+                                <div key={idx} className="flex items-center justify-between bg-on-hero/10 rounded-xl px-3 py-2.5">
+                                    <div className="flex items-center gap-2 text-on-hero">
+                                        <span className="text-lg">{getItemIcon(item.type)}</span>
+                                        <span className="font-semibold text-sm">{item.name}</span>
+                                    </div>
+                                    <div className="font-black text-on-hero text-sm">
+                                        {item.amount} {item.unit}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </button>
+                </div>
+            )}
+
+            {/* Diet card */}
+            {pet.dietSchedule && pet.dietSchedule.length > 0 && (
+                <div className="px-5 pb-4">
+                    <button
+                        onClick={() => navigate(`/pet/${id}/diet`)}
+                        className="w-full bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
+                    >
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-xs font-bold text-muted uppercase tracking-wide">
+                                🍽️ {t.diet}
+                            </div>
+                            {progress && (
+                                <div className="text-xs font-black bg-accent text-on-hero px-2 py-0.5 rounded-full">
+                                    {t.day} {progress.day}
+                                </div>
+                            )}
+                        </div>
+                        <div className="text-sm font-bold text-primary mb-3">
+                            {pet.dietSchedule.length} {t.weeks} · {progress ? `${t.week} ${progress.week}` : t.notStarted}
+                        </div>
+
+                        {/* Progress bar */}
+                        {progress && (
+                            <div>
+                                <div className="flex justify-between text-xs text-muted mb-1">
+                                    <span>{t.week} {progress.week} {t.of} {pet.dietSchedule.length}</span>
+                                    <span>{Math.round((progress.week / pet.dietSchedule.length) * 100)}%</span>
+                                </div>
+                                <div className="h-1.5 bg-app rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-accent rounded-full transition-all"
+                                        style={{ width: `${Math.min((progress.week / pet.dietSchedule.length) * 100, 100)}%` }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </button>
+                </div>
+            )}
 
             {/* Modal */}
             {editModalOpen && (
