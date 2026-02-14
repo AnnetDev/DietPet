@@ -4,6 +4,7 @@ import { useAppStore } from '../store/useAppStore'
 import { translations } from '../locales'
 import { ChevronLeft, Plus, Trash2, Dumbbell } from 'lucide-react'
 import WeightChart from '../components/WeightChart'
+import Layout from '../components/Layout'
 
 type TimeRange = 'week' | 'month' | 'year' | 'all'
 
@@ -82,7 +83,7 @@ export default function WeightPage() {
     }
 
     return (
-        <div className="min-h-screen bg-app pb-20">
+        <Layout><div className="min-h-screen bg-app pb-20">
 
             {/* Header */}
             <div className="bg-hero px-5 pt-14 pb-6">
@@ -97,7 +98,7 @@ export default function WeightPage() {
 
                 </div>
 
-                <h1 className="text-2xl font-black text-on-hero mb-3 flex gap-2 items-center"> <Dumbbell size={28}/> {t.weight}</h1>
+                <h1 className="text-2xl font-black text-on-hero mb-3 flex gap-2 items-center"> <Dumbbell size={28} /> {t.weight}</h1>
 
                 {/* Current weight + trend */}
                 <div className="flex items-center justify-between gap-3">
@@ -242,5 +243,7 @@ export default function WeightPage() {
                 </>
             )}
         </div>
+        </Layout>
+
     )
 }

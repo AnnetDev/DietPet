@@ -5,8 +5,8 @@ import { translations } from '../locales'
 import { Pet } from '../types'
 import { MoreHorizontal, Plus, Copy, Trash2 } from 'lucide-react'
 import Header from '../components/Header'
-import Footer from '../components/Footer'
 import { Pill } from 'lucide-react'
+import Layout from '../components/Layout'
 
 function getDayAndWeek(startDate: string | null) {
     if (!startDate) return null
@@ -136,30 +136,16 @@ function PetCard({
 
 export default function HomePage() {
     const navigate = useNavigate()
-    const { pets, language, deletePet, duplicatePet, addPet } = useAppStore()
+    const { pets, language, deletePet, duplicatePet } = useAppStore()
     const t = translations[language]
 
     const handleAddPet = () => {
-        const newPet: Pet = {
-            id: Date.now().toString(),
-            name: '',
-            breed: '',
-            age: '',
-            diagnosis: '',
-            diagnoses: [],
-            photo: null,
-            dietStartDate: null,
-            dietSchedule: [],
-            medCourses: [],
-            weightHistory: [],
-            notes: '',
-        }
-        addPet(newPet)
-        navigate(`/pet/${newPet.id}`)
-    }
+        navigate('/new-pet')
+      }
 
     return (
-        <div className="min-h-screen bg-app flex flex-col">
+        <Layout>
+           <div className="min-h-screen bg-app flex flex-col">
             {/* header */}
             <Header />
 
@@ -187,9 +173,8 @@ export default function HomePage() {
                     <span className="text-sm font-bold">{t.addPet}</span>
                 </button>
             </div>
-
-            {/* Footer */}
-            <Footer />
-        </div>
+        </div> 
+        </Layout>
+        
     )
 }
