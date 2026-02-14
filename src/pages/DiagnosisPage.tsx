@@ -29,6 +29,8 @@ export default function DiagnosisPage() {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
     const [endDate, setEndDate] = useState('')
     const [notes, setNotes] = useState('')
+    const [viewingCourse, setViewingCourse] = useState<MedCourse | null>(null)
+
 
     if (!pet) {
         navigate('/home', { replace: true })
@@ -159,7 +161,7 @@ export default function DiagnosisPage() {
                 <div className="flex items-center justify-between mb-4">
                     <button
                         onClick={() => navigate(`/pet/${id}`)}
-                        className="flex items-center gap-1 text-on-hero opacity-75 text-sm font-bold"
+                        className="flex items-center gap-1 text-on-hero text-sm font-bold"
                     >
                         <ChevronLeft size={16} />
                         {t.goBack}
@@ -167,7 +169,7 @@ export default function DiagnosisPage() {
                 </div>
 
                 <h1 className="text-2xl font-black text-on-hero mb-2 flex gap-2 items-center">
-                    <HeartPlus size={28}/> {t.medicalCard}
+                    <HeartPlus size={28} /> {t.medicalCard}
                 </h1>
             </div>
 
@@ -195,7 +197,7 @@ export default function DiagnosisPage() {
                                 <div key={diagnosis.id} className="bg-card rounded-xl p-4 shadow-sm flex items-start justify-between">
                                     <div className="flex-1">
                                         <div className="font-black text-primary text-base flex gap-2 items-center">
-                                            <Pill size={16}/> {diagnosis.name}
+                                            <Pill size={16} /> {diagnosis.name}
                                         </div>
                                         <div className="text-xs text-muted mt-1">
                                             {new Date(diagnosis.dateAdded).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
@@ -326,9 +328,15 @@ export default function DiagnosisPage() {
                         </h2>
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                             {pastCourses.map(course => (
-                                <div key={course.id} className="bg-card rounded-xl p-3 shadow-sm opacity-60">
+                                <div
+                                    key={course.id}
+                                    className="bg-card rounded-xl p-3 shadow-sm opacity-60"
+                                >
                                     <div className="flex items-start justify-between">
-                                        <div className="flex-1">
+                                        <button
+                                            onClick={() => setViewingCourse(course)}
+                                            className="flex-1 text-left"
+                                        >
                                             <div className="font-bold text-primary text-sm">
                                                 {course.name}
                                             </div>
@@ -343,7 +351,7 @@ export default function DiagnosisPage() {
                                                     year: 'numeric'
                                                 })}
                                             </div>
-                                        </div>
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(course.id)}
                                             className="w-7 h-7 rounded-full bg-app flex items-center justify-center text-red-500"
@@ -586,6 +594,70 @@ export default function DiagnosisPage() {
                                 {t.save}
                             </button>
                         </div>
+                    </div>
+                </>
+            )}
+
+            {viewingCourse && (
+                <>
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40"
+                        onClick={() => setViewingCourse(null)}
+                    />
+                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl max-h-[85vh] overflow-y-auto modal-container">
+                        <h2 className="text-xl font-black text-primary mb-6">
+                            {viewingCourse.name}
+                        </h2>
+
+                        <div className="space-y-4">
+                            {/* Info blocks */}
+                            <div className="bg-app rounded-xl p-4">
+                                <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
+                                    {t.dosage}
+                                </div>
+                                <div className="text-lg font-black text-primary">
+                                    {viewingCourse.amount} {viewingCourse.unit} · {viewingCourse.timesPerDay} {t.timesPerDay}
+                                </div>
+                            </div>
+
+                            <div className="bg-app rounded-xl p-4">
+                                <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
+                                    {t.duration}
+                                </div>
+                                <div className="text-sm font-bold text-primary">
+                                    {new Date(viewingCourse.startDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    })} — {new Date(viewingCourse.endDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    })}
+                                </div>
+                                <div className="text-xs text-muted mt-1">
+                                    {getTotalDays(viewingCourse.startDate, viewingCourse.endDate)} {t.days}
+                                </div>
+                            </div>
+
+                            {viewingCourse.notes && (
+                                <div className="bg-app rounded-xl p-4">
+                                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
+                                        📝 {t.notes}
+                                    </div>
+                                    <div className="text-sm text-primary leading-relaxed">
+                                        {viewingCourse.notes}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => setViewingCourse(null)}
+                            className="w-full py-3 rounded-xl bg-accent text-on-hero font-bold mt-6"
+                        >
+                            {t.close}
+                        </button>
                     </div>
                 </>
             )}

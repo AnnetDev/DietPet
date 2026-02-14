@@ -62,6 +62,9 @@ export const translations = {
         diagnoses: 'Diagnoses',
         addDiagnosis: 'Add Diagnosis',
         add: 'Add',
+        duration: 'Duration',
+        close: 'Close',
+
     },
     ru: {
         appName: "DietPet",
@@ -130,9 +133,11 @@ export const translations = {
         editNotes: 'Изменить заметки',
         diagnosisPlaceholder: 'например, МКБ',
         medicalCard: 'Медкарта',
-    diagnoses: 'Диагнозы',
-    addDiagnosis: 'Добавить диагноз',
-    add: 'Добавить',
+        diagnoses: 'Диагнозы',
+        addDiagnosis: 'Добавить диагноз',
+        add: 'Добавить',
+        duration: 'Продолжительность',
+        close: 'Закрыть',
     },
 };
 
