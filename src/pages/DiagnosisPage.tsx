@@ -5,6 +5,8 @@ import { translations } from '../locales'
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react'
 import { MedCourse, Diagnosis } from '../types'
 import { Pill, HeartPlus } from 'lucide-react'
+import Layout from '../components/Layout'
+
 
 export default function DiagnosisPage() {
     const { id } = useParams()
@@ -154,7 +156,8 @@ export default function DiagnosisPage() {
     }
 
     return (
-        <div className="min-h-screen bg-app pb-20">
+<Layout>
+<div className="min-h-screen bg-app pb-20">
 
             {/* Header */}
             <div className="bg-hero px-5 pt-14 pb-6">
@@ -662,5 +665,7 @@ export default function DiagnosisPage() {
                 </>
             )}
         </div>
+</Layout>
+        
     )
 }

@@ -6,6 +6,7 @@ import PetPage from './pages/PetPage'
 import WeightPage from './pages/WeightPage'
 import DiagnosisPage from './pages/DiagnosisPage'
 import DietPage from './pages/DietPage'
+import NewPetPage from './pages/NewPetPage'
 
 
 export default function App() {
@@ -21,6 +22,8 @@ export default function App() {
         <Route path="/pet/:id/weight" element={<WeightPage />} />
         <Route path="/pet/:id/diagnosis" element={<DiagnosisPage />} />
         <Route path="/pet/:id/diet" element={<DietPage />} />
+        <Route path="/new-pet" element={<NewPetPage />} />
+
       </Routes>
     </HashRouter>
   )
