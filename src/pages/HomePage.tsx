@@ -146,7 +146,7 @@ export default function HomePage() {
             breed: '',
             age: '',
             diagnosis: '',
-            diagnoses: [],  // добавь эту строку
+            diagnoses: [],
             photo: null,
             dietStartDate: null,
             dietSchedule: [],

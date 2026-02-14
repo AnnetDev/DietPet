@@ -385,7 +385,7 @@ export default function DiagnosisPage() {
 
             </div>
 
-            {/* Add/Edit Course Modal - без изменений */}
+            {/* Add/Edit Course Modal */}
             {showAddModal && (
                 <>
                     <div
