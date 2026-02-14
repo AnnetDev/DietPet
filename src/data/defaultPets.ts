@@ -4,7 +4,7 @@ import { Language } from '../types'
 const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
     ru: {
         name: 'Дженкин',
-        breed: 'Обычный кот',
+        breed: 'Обычный кот. Окрас табби',
         age: '11',
         diagnosis: 'МКБ',
         diagnoses: [
@@ -68,12 +68,12 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
             { date: '2026-02-03', value: 12 },
             { date: '2026-02-10', value: 11.7 },
         ],
-        notes: 'Нельзя давать рыбу',
+        notes: 'Окрас кота называется Табби. Нельзя давать рыбу. ',
     },
 
     en: {
         name: 'Jenkin',
-        breed: 'Domestic cat',
+        breed: 'Domestic cat. Tabby color',
         age: '11',
         diagnosis: 'Urolithiasis',
         diagnoses: [
@@ -137,7 +137,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
             { date: '2026-02-03', value: 12 },
             { date: '2026-02-10', value: 11.7 },
         ],
-        notes: 'No fish allowed',
+        notes: 'Tabby cat. No fish allowed',
     }
 }
 
