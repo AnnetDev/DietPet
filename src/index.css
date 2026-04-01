@@ -71,7 +71,7 @@ body {
   font-family: 'Nunito', sans-serif;
   background-color: var(--bg-app);
   color: var(--text-primary);
-  max-width: 430px;
+  /* max-width: 430px; */
   margin: 0 auto;
   min-height: 100vh;
   overflow-x: hidden;

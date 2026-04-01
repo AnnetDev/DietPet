@@ -102,7 +102,7 @@ export const translations = {
         deleteDietExplanation: 'You can restore it within 14 days.',
         deletedDiets: 'Deleted Diets',
         setStartDate: 'Set start date',
-    
+        unitLabels: { 'г': 'g', 'шт': 'pcs', 'мл': 'ml', 'таб': 'tab', 'кап': 'drops' },
     },
     ru: {
         appName: "DietPet",
@@ -214,6 +214,7 @@ export const translations = {
         deleteDietExplanation: 'Вы сможете восстановить её в течение 14 дней.',
         deletedDiets: 'Удалённые диеты',
         setStartDate: 'Установить дату начала',
+        unitLabels: { 'г': 'г', 'шт': 'шт', 'мл': 'мл', 'таб': 'таб', 'кап': 'кап' },
     },
 };
 
