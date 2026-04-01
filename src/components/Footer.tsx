@@ -7,7 +7,8 @@ export default function Footer() {
     const navigate = useNavigate()
 
     return (
-        <div className="border-t border-border bg-card px-6 pb-4 pt-3 flex justify-between items-center rounded-tr-xl rounded-tl-xl ">
+        <div className="border-t border-border bg-card px-6 pb-4 pt-3 flex items-center justify-center rounded-tr-xl rounded-tl-xl ">
+            <div className='flex justify-between items-center w-full'>
             <button
                 onClick={() => navigate('/home')}>
                 <HouseHeart size={26} className="font-black" />
@@ -20,7 +21,7 @@ export default function Footer() {
                     Diet<span className="text-accent">Pet</span>
                 </div>
             </button>
-
+            </div>
         </div>
     )
 }

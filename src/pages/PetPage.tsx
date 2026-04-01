@@ -173,7 +173,7 @@ export default function PetPage() {
                                             <span className="font-semibold text-sm">{item.name}</span>
                                         </div>
                                         <div className="font-black text-on-hero text-sm">
-                                            {item.amount} {item.unit}
+                                            {item.amount} {t.unitLabels[item.unit]}
                                         </div>
                                     </div>
                                 ))}

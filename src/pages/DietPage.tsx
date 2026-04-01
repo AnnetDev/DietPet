@@ -307,7 +307,7 @@ export default function DietPage() {
                                             <span className="font-semibold text-sm">{item.name}</span>
                                         </div>
                                         <div className="font-black text-on-hero text-sm">
-                                            {item.amount} {item.unit}
+                                            {item.amount} {t.unitLabels[item.unit]}
                                         </div>
                                     </div>
                                 ))}
@@ -393,7 +393,7 @@ export default function DietPage() {
                                                                     <span className="font-semibold text-sm text-primary">{item.name}</span>
                                                                 </div>
                                                                 <div className="font-black text-primary text-sm">
-                                                                    {item.amount} {item.unit}
+                                                                    {item.amount} {t.unitLabels[item.unit]}
                                                                 </div>
                                                             </div>
                                                         ))}
@@ -483,7 +483,7 @@ export default function DietPage() {
                                                                                 <span className="font-semibold text-sm text-primary">{item.name}</span>
                                                                             </div>
                                                                             <div className="font-black text-primary text-sm">
-                                                                                {item.amount} {item.unit}
+                                                                                {item.amount} {t.unitLabels[item.unit]}
                                                                             </div>
                                                                         </div>
                                                                     ))}
@@ -573,7 +573,7 @@ export default function DietPage() {
                                                         onChange={(e) => setEditItemAmount(e.target.value)}
                                                         className="w-20 bg-card border border-border rounded-lg px-2 py-1 text-xs font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-accent"
                                                     />
-                                                    <span className="text-xs text-muted self-center">{item.unit}</span>
+                                                    <span className="text-xs text-muted self-center">{t.unitLabels[item.unit]}</span>
                                                     <div className="flex gap-1 ml-auto">
                                                         <button
                                                             onClick={cancelItemEdit}
@@ -598,7 +598,7 @@ export default function DietPage() {
                                                     onClick={() => startEditingItem(item)}
                                                 >
                                                     <div className="font-semibold text-sm text-primary">{item.name}</div>
-                                                    <div className="text-xs text-muted">{item.amount} {item.unit}</div>
+                                                    <div className="text-xs text-muted">{item.amount} {t.unitLabels[item.unit]}</div>
                                                 </div>
                                                 <button
                                                     onClick={() => handleDeleteItem(item.id)}

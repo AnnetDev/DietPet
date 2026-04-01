@@ -261,7 +261,7 @@ export default function DiagnosisPage() {
                                                     {course.name}
                                                 </div>
                                                 <div className="text-sm text-muted">
-                                                    {course.amount} {course.unit} · {course.timesPerDay} {t.timesPerDay}
+                                                    {course.amount} {t.unitLabels[course.unit]} · {course.timesPerDay} {t.timesPerDay}
                                                 </div>
                                                 <div className="text-xs text-muted mt-1">
                                                     {new Date(course.startDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
@@ -619,7 +619,7 @@ export default function DiagnosisPage() {
                                     {t.dosage}
                                 </div>
                                 <div className="text-lg font-black text-primary">
-                                    {viewingCourse.amount} {viewingCourse.unit} · {viewingCourse.timesPerDay} {t.timesPerDay}
+                                    {viewingCourse.amount} {t.unitLabels[viewingCourse.unit]} · {viewingCourse.timesPerDay} {t.timesPerDay}
                                 </div>
                             </div>
 
