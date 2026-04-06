@@ -5,7 +5,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
     ru: {
         name: 'Дженкин',
         breed: 'Обычный кот. Окрас табби',
-        age: '11',
+        birthDate: '2015-03-15',
         diagnosis: 'МКБ',
         diagnoses: [
             {
@@ -74,7 +74,7 @@ const defaultPetData: Record<Language, Omit<Pet, 'id'>> = {
     en: {
         name: 'Jenkin',
         breed: 'Domestic cat. Tabby color',
-        age: '11',
+        birthDate: '2015-03-15',
         diagnosis: 'Urolithiasis',
         diagnoses: [
             {

@@ -19,6 +19,15 @@ function getDayAndWeek(startDate: string | null) {
     return { day, week }
 }
 
+function getAgeFromBirthDate(birthDate: string): number {
+    const birth = new Date(birthDate)
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
+    return age
+}
+
 function PetCard({
     pet,
     t,
@@ -35,9 +44,14 @@ function PetCard({
     const [menuOpen, setMenuOpen] = useState(false)
     const progress = getDayAndWeek(pet.dietStartDate)
     const totalWeeks = pet.dietSchedule.length || 0
+    const dietDone = !!(progress && totalWeeks > 0 && progress.week > totalWeeks)
+    const displayWeek = progress ? Math.min(progress.week, totalWeeks) : 0
     const progressPct = progress && totalWeeks
         ? Math.min((progress.week - 1) / totalWeeks * 100, 100)
         : 0
+    const petAge = pet.birthDate
+        ? getAgeFromBirthDate(pet.birthDate)
+        : (pet.age ? Number(pet.age) : null)
 
     return (
         <div className="bg-card rounded-2xl p-4 shadow-sm relative">
@@ -86,7 +100,7 @@ function PetCard({
                         <div className="text-xs text-muted mt-0.5">
                             {[
                                 pet.breed,
-                                pet.age && `${pet.age} ${typeof t.years === 'function' ? t.years(Number(pet.age)) : t.years}`,
+                                petAge !== null && `${petAge} ${typeof t.years === 'function' ? t.years(petAge) : t.years}`,
                                 pet.weightHistory[pet.weightHistory.length - 1] &&
                                 `${pet.weightHistory[pet.weightHistory.length - 1]!.value} ${t.kg}`
                             ].filter(Boolean).join(' · ')}
@@ -102,16 +116,21 @@ function PetCard({
                 {progress && totalWeeks > 0 && (
                     <div className="mt-3 pt-3 border-t border-border">
                         <div className="flex justify-between items-center mb-1.5">
-                            <span className="text-xs font-semibold text-muted">
-                                {t.week} {progress.week} {t.of} {totalWeeks}
+                            <span className={`text-xs font-semibold ${dietDone ? 'text-muted' : 'text-muted'}`}>
+                                {dietDone
+                                    ? `🎉 ${t.dietCompleted}`
+                                    : `${t.week} ${displayWeek} ${t.of} ${totalWeeks}`
+                                }
                             </span>
-                            <span className="text-xs font-black bg-accent text-on-hero px-2 py-0.5 rounded-full">
-                                {t.day} {progress.day}
-                            </span>
+                            {!dietDone && (
+                                <span className="text-xs font-black bg-accent text-on-hero px-2 py-0.5 rounded-full">
+                                    {t.day} {progress.day}
+                                </span>
+                            )}
                         </div>
                         <div className="h-1.5 bg-app rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-accent rounded-full transition-all"
+                                className={`h-full rounded-full transition-all ${dietDone ? 'bg-green-700/60' : 'bg-accent'}`}
                                 style={{ width: `${progressPct}%` }}
                             />
                         </div>

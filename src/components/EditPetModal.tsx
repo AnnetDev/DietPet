@@ -15,7 +15,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
     const t = translations[language]
     const [name, setName] = useState(pet.name)
     const [breed, setBreed] = useState(pet.breed)
-    const [age, setAge] = useState(pet.age)
+    const [birthDate, setBirthDate] = useState(pet.birthDate || '')
     const [photo, setPhoto] = useState(pet.photo)
     const [photoPreview, setPhotoPreview] = useState(pet.photo)
 
@@ -39,7 +39,7 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
         const updates: Partial<Pet> = {
             name,
             breed,
-            age,
+            birthDate: birthDate || undefined,
             photo,
         }
 
@@ -129,17 +129,16 @@ export default function EditPetModal({ pet, language, onSave, onClose }: EditPet
                         />
                     </div>
 
-                    {/* Age */}
+                    {/* Birth Date */}
                     <div>
                         <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                            {t.age}
+                            {t.birthDate}
                         </label>
                         <input
-                            type="text"
-                            value={age}
-                            onChange={(e) => setAge(e.target.value)}
+                            type="date"
+                            value={birthDate}
+                            onChange={(e) => setBirthDate(e.target.value)}
                             className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
-                            placeholder="10"
                         />
                     </div>
 

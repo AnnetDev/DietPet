@@ -19,7 +19,7 @@ export default function NewPetPage() {
     // Basic info
     const [name, setName] = useState('')
     const [breed, setBreed] = useState('')
-    const [age, setAge] = useState('')
+    const [birthDate, setBirthDate] = useState('')
 
     // Photo
     const [photo, setPhoto] = useState<string | null>(null)
@@ -82,7 +82,7 @@ export default function NewPetPage() {
             id: `pet_${crypto.randomUUID()}`,
             name: name || t.newPet,
             breed,
-            age,
+            birthDate: birthDate || undefined,
             diagnosis: '',
             diagnoses: diagnoses.map((d, i) => ({
                 id: `diag_${i}`,
@@ -148,14 +148,13 @@ export default function NewPetPage() {
 
                         <div>
                             <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                {t.age}
+                                {t.birthDate}
                             </label>
                             <input
-                                type="text"
-                                value={age}
-                                onChange={(e) => setAge(e.target.value)}
+                                type="date"
+                                value={birthDate}
+                                onChange={(e) => setBirthDate(e.target.value)}
                                 className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
-                                placeholder="5"
                             />
                         </div>
                     </div>
@@ -345,7 +344,7 @@ export default function NewPetPage() {
                 </div>
 
                 {/* Footer buttons */}
-                <div className="px-5 pb-8 pt-4 border-t border-border bg-card fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto">
+                <div className="px-5 pb-8 pt-4 border-t border-border bg-card fixed bottom-0 left-0 right-0 w-full sm:max-w-xl lg:max-w-2xl mx-auto">
                     <div className="flex gap-3">
                         {step !== 'basic' && step !== 'diet' && (
                             <button

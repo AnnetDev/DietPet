@@ -324,10 +324,15 @@ export default function DietPage() {
                         {dietSchedule.length === 0 ? (
                             <button
                                 onClick={handleAddWeek}
-                                className="w-full bg-card rounded-2xl p-5 border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-accent active:scale-95 transition-transform"
+                                className="w-full bg-accent rounded-2xl p-5 flex items-center gap-4 text-on-hero active:scale-95 transition-transform shadow-sm"
                             >
-                                <Plus size={28} strokeWidth={2} />
-                                <span className="text-sm font-bold">{t.createDiet}</span>
+                                <div className="w-10 h-10 rounded-full bg-on-hero/20 flex items-center justify-center flex-shrink-0">
+                                    <Plus size={22} strokeWidth={2.5} />
+                                </div>
+                                <div className="text-left">
+                                    <div className="text-sm font-black">🍽️ {t.createDiet}</div>
+                                    <div className="text-xs opacity-75 mt-0.5">{t.dietExplanation}</div>
+                                </div>
                             </button>
                         ) : (
                             <>

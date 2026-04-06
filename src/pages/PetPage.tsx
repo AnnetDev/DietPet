@@ -19,11 +19,20 @@ function getDayAndWeek(startDate: string | null) {
     return { day, week }
 }
 
+function getAgeFromBirthDate(birthDate: string): number {
+    const birth = new Date(birthDate)
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
+    return age
+}
+
 export default function PetPage() {
     const { id } = useParams()
     const navigate = useNavigate()
     const [editModalOpen, setEditModalOpen] = useState(false)
-    const { pets, deletedDiets, language, updatePet, restoreDiet, permanentlyDeleteDietByDate } = useAppStore()
+    const { pets, deletedDiets, language, updatePet, deleteDiet, restoreDiet, permanentlyDeleteDietByDate } = useAppStore()
     const pet = pets.find(p => p.id === id)
     const [showDeletedDiets, setShowDeletedDiets] = useState(false)
     const t = translations[language]
@@ -37,6 +46,12 @@ export default function PetPage() {
     }
 
     const progress = getDayAndWeek(pet.dietStartDate)
+    const totalWeeks = pet.dietSchedule.length
+    const dietDone = !!(progress && totalWeeks > 0 && progress.week > totalWeeks)
+    const displayWeek = progress ? Math.min(progress.week, totalWeeks) : 0
+    const petAge = pet.birthDate
+        ? getAgeFromBirthDate(pet.birthDate)
+        : (pet.age ? Number(pet.age) : null)
 
     const handleSave = (updates: Partial<Pet>) => {
         updatePet({ ...pet, ...updates })
@@ -106,10 +121,10 @@ export default function PetPage() {
 
                         <div className="flex items-center text-on-hero text-sm opacity-90">
                             {pet.breed && <span>{pet.breed}</span>}
-                            {pet.breed && pet.age && <Dot size={20} />}
-                            {pet.age && (
+                            {pet.breed && petAge !== null && <Dot size={20} />}
+                            {petAge !== null && (
                                 <span>
-                                    {pet.age} {typeof t.years === 'function' ? t.years(Number(pet.age)) : t.years}
+                                    {petAge} {typeof t.years === 'function' ? t.years(petAge) : t.years}
                                 </span>
                             )}
                             {pet.weightHistory.length > 0 && <Dot size={20} />}
@@ -200,34 +215,53 @@ export default function PetPage() {
                                 )}
                             </div>
                             <div className="text-sm font-bold text-primary mb-3">
-                                {pet.dietSchedule.length} {t.weeks} · {progress ? `${t.week} ${progress.week}` : t.notStarted}
+                                {pet.dietSchedule.length} {t.weeks} · {progress ? (dietDone ? t.dietCompleted : `${t.week} ${displayWeek}`) : t.notStarted}
                             </div>
 
                             {/* Progress bar */}
                             {progress && (
                                 <div>
                                     <div className="flex justify-between text-xs text-muted mb-1">
-                                        <span>{t.week} {progress.week} {t.of} {pet.dietSchedule.length}</span>
-                                        <span>{Math.round((progress.week / pet.dietSchedule.length) * 100)}%</span>
+                                        <span>{dietDone ? t.dietCompleted : `${t.week} ${displayWeek} ${t.of} ${totalWeeks}`}</span>
+                                        <span>{Math.min(Math.round((displayWeek / totalWeeks) * 100), 100)}%</span>
                                     </div>
                                     <div className="h-1.5 bg-app rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-accent rounded-full transition-all"
-                                            style={{ width: `${Math.min((progress.week / pet.dietSchedule.length) * 100, 100)}%` }}
+                                            style={{ width: `${Math.min((displayWeek / totalWeeks) * 100, 100)}%` }}
                                         />
                                     </div>
                                 </div>
                             )}
                         </button>
+                        {dietDone && (
+                            <button
+                                onClick={() => { deleteDiet(pet.id); navigate(`/pet/${id}/diet`) }}
+                                className="w-full mt-2 bg-accent rounded-2xl p-4 flex items-center gap-4 text-on-hero active:scale-95 transition-transform shadow-sm"
+                            >
+                                <div className="w-9 h-9 rounded-full bg-on-hero/20 flex items-center justify-center flex-shrink-0">
+                                    <Plus size={20} strokeWidth={2.5} />
+                                </div>
+                                <div className="text-left">
+                                    <div className="text-sm font-black">{t.createDiet}</div>
+                                    <div className="text-xs opacity-75 mt-0.5">{t.dietExplanation}</div>
+                                </div>
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <div className="px-5 pb-4">
                         <button
                             onClick={() => navigate(`/pet/${id}/diet`)}
-                            className="w-full bg-card rounded-2xl p-5 border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-accent active:scale-95 transition-transform"
+                            className="w-full bg-accent rounded-2xl p-5 flex items-center gap-4 text-on-hero active:scale-95 transition-transform shadow-sm"
                         >
-                            <Plus size={28} strokeWidth={2} />
-                            <span className="text-sm font-bold">{t.createDiet}</span>
+                            <div className="w-10 h-10 rounded-full bg-on-hero/20 flex items-center justify-center flex-shrink-0">
+                                <Plus size={22} strokeWidth={2.5} />
+                            </div>
+                            <div className="text-left">
+                                <div className="text-sm font-black">🍽️ {t.createDiet}</div>
+                                <div className="text-xs opacity-75 mt-0.5">{t.dietExplanation}</div>
+                            </div>
                         </button>
                     </div>
                 )}

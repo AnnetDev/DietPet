@@ -40,7 +40,8 @@ export interface Pet {
     id: string
     name: string
     breed: string
-    age: string
+    age?: string
+    birthDate?: string
     diagnosis: string
     diagnoses: Diagnosis[]
     photo: string | null

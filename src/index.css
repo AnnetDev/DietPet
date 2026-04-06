@@ -92,6 +92,5 @@ select {
 
 /* Fix modal overflow on iOS */
 .modal-container {
-  max-width: calc(100vw - 32px);
   overflow-x: hidden;
 }
