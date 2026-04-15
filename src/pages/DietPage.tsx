@@ -5,19 +5,9 @@ import { translations } from '../locales'
 import { ChevronLeft, Plus, Edit2, Trash2, Copy, X } from 'lucide-react'
 import { DietItem, DietItemType, DietItemUnit, DietWeek } from '../types'
 import Layout from '../components/Layout'
-
-
-function getDayAndWeek(startDate: string | null) {
-    if (!startDate) return null
-    const start = new Date(startDate)
-    const today = new Date()
-    const diffMs = today.getTime() - start.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    if (diffDays < 0) return null
-    const day = diffDays + 1
-    const week = Math.ceil(day / 7)
-    return { day, week }
-}
+import DietItemRow from '../components/DietItemRow'
+import ModalWrapper from '../components/ModalWrapper'
+import { getDayAndWeek, getItemIcon } from '../utils/dietUtils'
 
 export default function DietPage() {
     const { id } = useParams()
@@ -100,16 +90,6 @@ export default function DietPage() {
 
     const toggleWeek = (weekNum: number) => {
         setExpandedWeek(expandedWeek === weekNum ? null : weekNum)
-    }
-
-    const getItemIcon = (type: string) => {
-        switch (type) {
-            case 'dry': return '🥣'
-            case 'wet': return '🍱'
-            case 'medicine': return '💊'
-            case 'natural': return '🥩'
-            default: return '📦'
-        }
     }
 
     const pastWeeks = dietSchedule.filter(w => currentWeek && w.week < currentWeek)
@@ -315,15 +295,7 @@ export default function DietPage() {
                             </div>
                             <div className="space-y-2">
                                 {dietSchedule[currentWeek - 1].items.map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between bg-on-hero/10 rounded-xl px-3 py-2">
-                                        <div className="flex items-center gap-2 text-on-hero">
-                                            <span className="text-lg">{getItemIcon(item.type)}</span>
-                                            <span className="font-semibold text-sm">{item.name}</span>
-                                        </div>
-                                        <div className="font-black text-on-hero text-sm">
-                                            {item.amount} {t.unitLabels[item.unit]}
-                                        </div>
-                                    </div>
+                                    <DietItemRow key={idx} item={item} unitLabel={t.unitLabels[item.unit]} variant="on-hero" compact />
                                 ))}
                             </div>
                         </div>
@@ -403,15 +375,7 @@ export default function DietPage() {
                                                         {isExpanded && (
                                                             <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
                                                                 {weekData.items.map((item, idx) => (
-                                                                    <div key={idx} className="flex items-center justify-between bg-app rounded-xl px-3 py-2">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="text-base">{getItemIcon(item.type)}</span>
-                                                                            <span className="font-semibold text-sm text-primary">{item.name}</span>
-                                                                        </div>
-                                                                        <div className="font-black text-primary text-sm">
-                                                                            {item.amount} {t.unitLabels[item.unit]}
-                                                                        </div>
-                                                                    </div>
+                                                                    <DietItemRow key={idx} item={item} unitLabel={t.unitLabels[item.unit]} compact />
                                                                 ))}
                                                             </div>
                                                         )}
@@ -474,15 +438,7 @@ export default function DietPage() {
                                                         {isExpanded && !editMode && (
                                                             <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
                                                                 {weekData.items.map((item, idx) => (
-                                                                    <div key={idx} className="flex items-center justify-between bg-app rounded-xl px-3 py-2">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="text-base">{getItemIcon(item.type)}</span>
-                                                                            <span className="font-semibold text-sm text-primary">{item.name}</span>
-                                                                        </div>
-                                                                        <div className="font-black text-primary text-sm">
-                                                                            {item.amount} {t.unitLabels[item.unit]}
-                                                                        </div>
-                                                                    </div>
+                                                                    <DietItemRow key={idx} item={item} unitLabel={t.unitLabels[item.unit]} compact />
                                                                 ))}
                                                             </div>
                                                         )}
@@ -552,15 +508,7 @@ export default function DietPage() {
                                                                     {isExpanded && !editMode && (
                                                                         <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
                                                                             {weekData.items.map((item, idx) => (
-                                                                                <div key={idx} className="flex items-center justify-between bg-app rounded-xl px-3 py-2">
-                                                                                    <div className="flex items-center gap-2">
-                                                                                        <span className="text-base">{getItemIcon(item.type)}</span>
-                                                                                        <span className="font-semibold text-sm text-primary">{item.name}</span>
-                                                                                    </div>
-                                                                                    <div className="font-black text-primary text-sm">
-                                                                                        {item.amount} {t.unitLabels[item.unit]}
-                                                                                    </div>
-                                                                                </div>
+                                                                                <DietItemRow key={idx} item={item} unitLabel={t.unitLabels[item.unit]} compact />
                                                                             ))}
                                                                         </div>
                                                                     )}
@@ -580,12 +528,7 @@ export default function DietPage() {
 
                 {/* Week Editor Modal */}
                 {editingWeek !== null && (
-                    <>
-                        <div
-                            className="fixed inset-0 bg-black/50 z-40"
-                            onClick={handleCancelWeek}
-                        />
-                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl max-h-[85vh] overflow-y-auto modal-container">
+                    <ModalWrapper onClose={handleCancelWeek} scrollable>
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-xl font-black text-primary">
                                     {t.week} {editingWeek}
@@ -713,20 +656,12 @@ export default function DietPage() {
                                     {t.save}
                                 </button>
                             </div>
-                        </div>
-                    </>
-                )
-                }
+                    </ModalWrapper>
+                )}
 
                 {/* Add Item Modal */}
-                {
-                    showAddItemModal && (
-                        <>
-                            <div
-                                className="fixed inset-0 bg-black/60 z-50"
-                                onClick={() => setShowAddItemModal(false)}
-                            />
-                            <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[60] bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl modal-container">
+                {showAddItemModal && (
+                    <ModalWrapper onClose={() => setShowAddItemModal(false)} elevated>
                                 <h2 className="text-xl font-black text-primary mb-6">{t.addItem}</h2>
 
                                 <div className="space-y-4">
@@ -812,19 +747,11 @@ export default function DietPage() {
                                         {t.add}
                                     </button>
                                 </div>
-                            </div>
-                        </>
-                    )
-                }
+                    </ModalWrapper>
+                )}
 
-                {
-                    showEditDateModal && (
-                        <>
-                            <div
-                                className="fixed inset-0 bg-black/60 z-50"
-                                onClick={() => setShowEditDateModal(false)}
-                            />
-                            <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[60] bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl modal-container">
+                {showEditDateModal && (
+                    <ModalWrapper onClose={() => setShowEditDateModal(false)} elevated>
                                 <h2 className="text-xl font-black text-primary mb-6">{t.editStartDate}</h2>
 
                                 <div>
@@ -853,19 +780,12 @@ export default function DietPage() {
                                         {t.save}
                                     </button>
                                 </div>
-                            </div>
-                        </>
-                    )
-                }
+                    </ModalWrapper>
+                )}
 
                 {/* Start New Diet Confirmation Modal */}
                 {showStartNewDietModal && (
-                    <>
-                        <div
-                            className="fixed inset-0 bg-black/60 z-50"
-                            onClick={() => setShowStartNewDietModal(false)}
-                        />
-                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[60] bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl modal-container">
+                    <ModalWrapper onClose={() => setShowStartNewDietModal(false)} elevated>
                             <h2 className="text-xl font-black text-primary mb-3">{t.startNewDiet}?</h2>
                             <p className="text-sm text-muted mb-5">{t.archiveNotice}</p>
 
@@ -901,38 +821,31 @@ export default function DietPage() {
                                     {t.startNewDiet}
                                 </button>
                             </div>
-                        </div>
-                    </>
+                    </ModalWrapper>
                 )}
 
                 {/* Delete Diet Confirmation */}
                 {showDeleteConfirm && (
-                    <>
-                        <div
-                            className="fixed inset-0 bg-black/50 z-40"
-                            onClick={() => setShowDeleteConfirm(false)}
-                        />
-                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                            <h2 className="text-xl font-black text-primary mb-4">{t.deleteDietConfirm}</h2>
-                            <p className="text-sm text-muted mb-6">
-                                {t.deleteDietExplanation}
-                            </p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setShowDeleteConfirm(false)}
-                                    className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                                >
-                                    {t.cancel}
-                                </button>
-                                <button
-                                    onClick={handleDeleteDiet}
-                                    className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold"
-                                >
-                                    {t.delete}
-                                </button>
-                            </div>
+                    <ModalWrapper onClose={() => setShowDeleteConfirm(false)}>
+                        <h2 className="text-xl font-black text-primary mb-4">{t.deleteDietConfirm}</h2>
+                        <p className="text-sm text-muted mb-6">
+                            {t.deleteDietExplanation}
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleDeleteDiet}
+                                className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold"
+                            >
+                                {t.delete}
+                            </button>
                         </div>
-                    </>
+                    </ModalWrapper>
                 )}
             </div >
         </Layout>

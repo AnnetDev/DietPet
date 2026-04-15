@@ -6,27 +6,8 @@ import { Pet } from '../types'
 import { MoreHorizontal, Plus, Copy, Trash2, Pill, RotateCcw } from 'lucide-react'
 import Header from '../components/Header'
 import Layout from '../components/Layout'
-
-function getDayAndWeek(startDate: string | null) {
-    if (!startDate) return null
-    const start = new Date(startDate)
-    const today = new Date()
-    const diffMs = today.getTime() - start.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    if (diffDays < 0) return null
-    const day = diffDays + 1
-    const week = Math.ceil(day / 7)
-    return { day, week }
-}
-
-function getAgeFromBirthDate(birthDate: string): number {
-    const birth = new Date(birthDate)
-    const today = new Date()
-    let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
-    return age
-}
+import ProgressBar from '../components/ProgressBar'
+import { getDayAndWeek, getAgeFromBirthDate, getDaysUntilDelete } from '../utils/dietUtils'
 
 function PetCard({
     pet,
@@ -129,12 +110,7 @@ function PetCard({
                                 </span>
                             )}
                         </div>
-                        <div className="h-1.5 bg-app rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all ${dietDone ? 'bg-green-700/60' : 'bg-accent'}`}
-                                style={{ width: `${progressPct}%` }}
-                            />
-                        </div>
+                        <ProgressBar percent={progressPct} variant={dietDone ? 'completed' : 'default'} />
                     </div>
                 )}
             </button>
@@ -165,13 +141,6 @@ export default function HomePage() {
         }
     }
 
-    const getDaysUntilPermanentDelete = (deletedAt: string) => {
-        const deleted = new Date(deletedAt).getTime()
-        const now = new Date().getTime()
-        const thirtyDays = 30 * 24 * 60 * 60 * 1000
-        const timeLeft = thirtyDays - (now - deleted)
-        return Math.ceil(timeLeft / (1000 * 60 * 60 * 24))
-    }
 
     return (
         <Layout>
@@ -214,7 +183,7 @@ export default function HomePage() {
                         {showDeletedSection && (
                             <div className="mt-3 space-y-2 opacity-60">
                                 {deletedPets.map(pet => {
-                                    const daysLeft = getDaysUntilPermanentDelete(pet.deletedAt)
+                                    const daysLeft = getDaysUntilDelete(pet.deletedAt, 30)
                                     return (
                                         <div key={pet.id} className="bg-card rounded-xl p-3 border border-border">
                                             <div className="flex items-start gap-3">
