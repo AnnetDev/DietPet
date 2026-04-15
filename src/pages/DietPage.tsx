@@ -46,6 +46,10 @@ export default function DietPage() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const [showEditDateModal, setShowEditDateModal] = useState(false)
     const [editStartDate, setEditStartDate] = useState('')
+    const [showStartNewDietModal, setShowStartNewDietModal] = useState(false)
+    const [newDietStartDate, setNewDietStartDate] = useState('')
+    const [isNewDietMode, setIsNewDietMode] = useState(false)
+    const [pendingNewStartDate, setPendingNewStartDate] = useState('')
 
 
 
@@ -138,18 +142,28 @@ export default function DietPage() {
 
     // Save week changes
     const handleSaveWeek = () => {
-        const updatedSchedule = dietSchedule.map(w =>
-            w.week === editingWeek
-                ? { ...w, items: weekItems }
-                : w
-        )
-        updatePet({ ...pet, dietSchedule: updatedSchedule })
+        if (isNewDietMode) {
+            // Archive old diet and start fresh — only happens on actual save
+            const newSchedule: DietWeek[] = [{ week: editingWeek!, items: weekItems }]
+            deleteDiet(pet.id)
+            updatePet({ ...pet, dietSchedule: newSchedule, dietStartDate: pendingNewStartDate || null })
+            setIsNewDietMode(false)
+            setPendingNewStartDate('')
+        } else {
+            const existing = dietSchedule.find(w => w.week === editingWeek)
+            const updatedSchedule: DietWeek[] = existing
+                ? dietSchedule.map(w => w.week === editingWeek ? { ...w, items: weekItems } : w)
+                : [...dietSchedule, { week: editingWeek!, items: weekItems }]
+            updatePet({ ...pet, dietSchedule: updatedSchedule })
+        }
         setEditingWeek(null)
     }
 
     // Cancel week editing
     const handleCancelWeek = () => {
         setEditingWeek(null)
+        setIsNewDietMode(false)
+        setPendingNewStartDate('')
     }
 
     // Delete item from week
@@ -218,7 +232,7 @@ export default function DietPage() {
             <div className="min-h-screen bg-app pb-20">
 
                 {/* Header */}
-                <div className="bg-hero px-5 pt-14 pb-6">
+                <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
                     <div className="flex items-center justify-between mb-4">
                         <button
                             onClick={() => navigate(`/pet/${id}`)}
@@ -293,7 +307,7 @@ export default function DietPage() {
                 {/* Content */}
                 <div className="px-5 py-4 space-y-4">
 
-                    {/* Current day highlight */}
+                    {/* Current day highlight — only when diet is active */}
                     {!editMode && currentWeek && dietSchedule[currentWeek - 1] && (
                         <div className="bg-accent rounded-2xl p-4 shadow-lg">
                             <div className="text-xs font-bold text-on-hero uppercase tracking-wide mb-2">
@@ -315,12 +329,27 @@ export default function DietPage() {
                         </div>
                     )}
 
+                    {/* Diet completed — start new diet CTA */}
+                    {!editMode && dietSchedule.length > 0 && progress && progress.week > dietSchedule.length && (
+                        <button
+                            onClick={() => {
+                                setNewDietStartDate(new Date().toISOString().split('T')[0])
+                                setShowStartNewDietModal(true)
+                            }}
+                            className="w-full bg-accent rounded-2xl p-4 flex items-center gap-4 text-on-hero active:scale-95 transition-transform shadow-sm"
+                        >
+                            <div className="w-9 h-9 rounded-full bg-on-hero/20 flex items-center justify-center flex-shrink-0">
+                                <Plus size={20} strokeWidth={2.5} />
+                            </div>
+                            <div className="text-left">
+                                <div className="text-sm font-black">{t.startNewDiet}</div>
+                                <div className="text-xs opacity-75 mt-0.5">{t.dietExplanation}</div>
+                            </div>
+                        </button>
+                    )}
+
                     {/* Week list */}
                     <div>
-                        <h2 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
-                            {t.fullSchedule}
-                        </h2>
-
                         {dietSchedule.length === 0 ? (
                             <button
                                 onClick={handleAddWeek}
@@ -336,167 +365,210 @@ export default function DietPage() {
                             </button>
                         ) : (
                             <>
-                                <div className="space-y-2">
-                                    {/* Active weeks */}
-                                    {activeWeeks.map((weekData) => {
-                                        const isExpanded = expandedWeek === weekData.week
-                                        const isCurrent = currentWeek === weekData.week
+                                {/* Past weeks (shown above active when diet is done) */}
+                                {pastWeeks.length > 0 && activeWeeks.length === 0 && (
+                                    <div>
+                                        <h2 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
+                                            {t.fullSchedule} · {dietSchedule.length} {t.weeks}
+                                        </h2>
+                                        <div className="space-y-2 opacity-60">
+                                            {pastWeeks.map((weekData) => {
+                                                const isExpanded = expandedWeek === weekData.week
 
-                                        return (
-                                            <div
-                                                key={weekData.week}
-                                                className={`bg-card rounded-2xl shadow-sm overflow-hidden transition-all ${isCurrent ? 'ring-2 ring-accent' : ''
-                                                    }`}
-                                            >
-                                                <button
-                                                    onClick={() => !editMode && toggleWeek(weekData.week)}
-                                                    className="w-full px-4 py-3 flex items-center justify-between text-left"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${isCurrent
-                                                            ? 'bg-accent text-on-hero'
-                                                            : 'bg-app text-muted'
-                                                            }`}>
-                                                            {weekData.week}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-black text-primary text-sm">
-                                                                {t.week} {weekData.week}
-                                                            </div>
-                                                            <div className="text-xs text-muted">
-                                                                {weekData.items.length} {t.items}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {editMode ? (
+                                                return (
+                                                    <div
+                                                        key={weekData.week}
+                                                        className="bg-card rounded-2xl shadow-sm overflow-hidden"
+                                                    >
                                                         <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                openWeekEditor(weekData.week)
-                                                            }}
-                                                            className="px-3 py-1.5 bg-accent text-on-hero rounded-full text-xs font-bold"
+                                                            onClick={() => toggleWeek(weekData.week)}
+                                                            className="w-full px-4 py-3 flex items-center justify-between text-left"
                                                         >
-                                                            {t.edit}
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm bg-app text-muted">
+                                                                    {weekData.week}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-black text-primary text-sm">
+                                                                        {t.week} {weekData.week}
+                                                                    </div>
+                                                                    <div className="text-xs text-muted">
+                                                                        {weekData.items.length} {t.items}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className={`text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</div>
                                                         </button>
-                                                    ) : (
-                                                        <div className={`text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                                                            ▼
-                                                        </div>
-                                                    )}
+
+                                                        {isExpanded && (
+                                                            <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
+                                                                {weekData.items.map((item, idx) => (
+                                                                    <div key={idx} className="flex items-center justify-between bg-app rounded-xl px-3 py-2">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-base">{getItemIcon(item.type)}</span>
+                                                                            <span className="font-semibold text-sm text-primary">{item.name}</span>
+                                                                        </div>
+                                                                        <div className="font-black text-primary text-sm">
+                                                                            {item.amount} {t.unitLabels[item.unit]}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Active weeks */}
+                                {activeWeeks.length > 0 && (
+                                    <div>
+                                        <h2 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
+                                            {t.fullSchedule}
+                                        </h2>
+                                        <div className="space-y-2">
+                                            {activeWeeks.map((weekData) => {
+                                                const isExpanded = expandedWeek === weekData.week
+                                                const isCurrent = currentWeek === weekData.week
+
+                                                return (
+                                                    <div
+                                                        key={weekData.week}
+                                                        className={`bg-card rounded-2xl shadow-sm overflow-hidden transition-all ${isCurrent ? 'ring-2 ring-accent' : ''}`}
+                                                    >
+                                                        <button
+                                                            onClick={() => !editMode && toggleWeek(weekData.week)}
+                                                            className="w-full px-4 py-3 flex items-center justify-between text-left"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${isCurrent ? 'bg-accent text-on-hero' : 'bg-app text-muted'}`}>
+                                                                    {weekData.week}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-black text-primary text-sm">
+                                                                        {t.week} {weekData.week}
+                                                                    </div>
+                                                                    <div className="text-xs text-muted">
+                                                                        {weekData.items.length} {t.items}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {editMode ? (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        openWeekEditor(weekData.week)
+                                                                    }}
+                                                                    className="px-3 py-1.5 bg-accent text-on-hero rounded-full text-xs font-bold"
+                                                                >
+                                                                    {t.edit}
+                                                                </button>
+                                                            ) : (
+                                                                <div className={`text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</div>
+                                                            )}
+                                                        </button>
+
+                                                        {isExpanded && !editMode && (
+                                                            <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
+                                                                {weekData.items.map((item, idx) => (
+                                                                    <div key={idx} className="flex items-center justify-between bg-app rounded-xl px-3 py-2">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-base">{getItemIcon(item.type)}</span>
+                                                                            <span className="font-semibold text-sm text-primary">{item.name}</span>
+                                                                        </div>
+                                                                        <div className="font-black text-primary text-sm">
+                                                                            {item.amount} {t.unitLabels[item.unit]}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )
+                                            })}
+
+                                            {/* Add Week button */}
+                                            {editMode && (
+                                                <button
+                                                    onClick={handleAddWeek}
+                                                    className="w-full bg-card rounded-2xl p-4 border-2 border-dashed border-border flex items-center justify-center gap-2 text-accent active:scale-95 transition-transform"
+                                                >
+                                                    <Plus size={20} />
+                                                    <span className="text-sm font-bold">{t.addWeek}</span>
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* Past weeks toggle — only when diet is in progress */}
+                                        {pastWeeks.length > 0 && (
+                                            <div className="mt-6">
+                                                <button
+                                                    onClick={() => setShowPastWeeks(!showPastWeeks)}
+                                                    className="w-full flex items-center justify-center gap-2 text-sm font-bold text-muted py-2"
+                                                >
+                                                    <span>{showPastWeeks ? t.hidePastWeeks : t.showPastWeeks} ({pastWeeks.length})</span>
+                                                    <span className={`transition-transform ${showPastWeeks ? 'rotate-180' : ''}`}>▼</span>
                                                 </button>
 
-                                                {isExpanded && !editMode && (
-                                                    <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
-                                                        {weekData.items.map((item, idx) => (
-                                                            <div
-                                                                key={idx}
-                                                                className="flex items-center justify-between bg-app rounded-xl px-3 py-2"
-                                                            >
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-base">{getItemIcon(item.type)}</span>
-                                                                    <span className="font-semibold text-sm text-primary">{item.name}</span>
+                                                {showPastWeeks && (
+                                                    <div className="space-y-2 mt-3 opacity-60">
+                                                        {pastWeeks.map((weekData) => {
+                                                            const isExpanded = expandedWeek === weekData.week
+
+                                                            return (
+                                                                <div key={weekData.week} className="bg-card rounded-2xl shadow-sm overflow-hidden">
+                                                                    <button
+                                                                        onClick={() => !editMode && toggleWeek(weekData.week)}
+                                                                        className="w-full px-4 py-3 flex items-center justify-between text-left"
+                                                                    >
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm bg-app text-muted">
+                                                                                {weekData.week}
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-black text-primary text-sm">{t.week} {weekData.week}</div>
+                                                                                <div className="text-xs text-muted">{weekData.items.length} {t.items}</div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {editMode ? (
+                                                                            <button
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation()
+                                                                                    openWeekEditor(weekData.week)
+                                                                                }}
+                                                                                className="px-3 py-1.5 bg-app text-muted rounded-full text-xs font-bold"
+                                                                            >
+                                                                                {t.edit}
+                                                                            </button>
+                                                                        ) : (
+                                                                            <div className={`text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</div>
+                                                                        )}
+                                                                    </button>
+
+                                                                    {isExpanded && !editMode && (
+                                                                        <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
+                                                                            {weekData.items.map((item, idx) => (
+                                                                                <div key={idx} className="flex items-center justify-between bg-app rounded-xl px-3 py-2">
+                                                                                    <div className="flex items-center gap-2">
+                                                                                        <span className="text-base">{getItemIcon(item.type)}</span>
+                                                                                        <span className="font-semibold text-sm text-primary">{item.name}</span>
+                                                                                    </div>
+                                                                                    <div className="font-black text-primary text-sm">
+                                                                                        {item.amount} {t.unitLabels[item.unit]}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
                                                                 </div>
-                                                                <div className="font-black text-primary text-sm">
-                                                                    {item.amount} {t.unitLabels[item.unit]}
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                            )
+                                                        })}
                                                     </div>
                                                 )}
-                                            </div>
-                                        )
-                                    })}
-
-                                    {/* Add Week button*/}
-                                    {editMode && (
-                                        <button
-                                            onClick={handleAddWeek}
-                                            className="w-full bg-card rounded-2xl p-4 border-2 border-dashed border-border flex items-center justify-center gap-2 text-accent active:scale-95 transition-transform"
-                                        >
-                                            <Plus size={20} />
-                                            <span className="text-sm font-bold">{t.addWeek}</span>
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Past weeks toggle */}
-                                {pastWeeks.length > 0 && (
-                                    <div className="mt-6">
-                                        <button
-                                            onClick={() => setShowPastWeeks(!showPastWeeks)}
-                                            className="w-full flex items-center justify-center gap-2 text-sm font-bold text-muted py-2"
-                                        >
-                                            <span>{showPastWeeks ? t.hidePastWeeks : t.showPastWeeks} ({pastWeeks.length})</span>
-                                            <span className={`transition-transform ${showPastWeeks ? 'rotate-180' : ''}`}>▼</span>
-                                        </button>
-
-                                        {showPastWeeks && (
-                                            <div className="space-y-2 mt-3 opacity-60">
-                                                {pastWeeks.map((weekData) => {
-                                                    const isExpanded = expandedWeek === weekData.week
-
-                                                    return (
-                                                        <div
-                                                            key={weekData.week}
-                                                            className="bg-card rounded-2xl shadow-sm overflow-hidden"
-                                                        >
-                                                            <button
-                                                                onClick={() => !editMode && toggleWeek(weekData.week)}
-                                                                className="w-full px-4 py-3 flex items-center justify-between text-left"
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm bg-app text-muted">
-                                                                        {weekData.week}
-                                                                    </div>
-                                                                    <div>
-                                                                        <div className="font-black text-primary text-sm">
-                                                                            {t.week} {weekData.week}
-                                                                        </div>
-                                                                        <div className="text-xs text-muted">
-                                                                            {weekData.items.length} {t.items}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                {editMode ? (
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation()
-                                                                            openWeekEditor(weekData.week)
-                                                                        }}
-                                                                        className="px-3 py-1.5 bg-app text-muted rounded-full text-xs font-bold"
-                                                                    >
-                                                                        {t.edit}
-                                                                    </button>
-                                                                ) : (
-                                                                    <div className={`text-muted transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                                                                        ▼
-                                                                    </div>
-                                                                )}
-                                                            </button>
-
-                                                            {isExpanded && !editMode && (
-                                                                <div className="px-4 pb-4 space-y-2 border-t border-border pt-3">
-                                                                    {weekData.items.map((item, idx) => (
-                                                                        <div
-                                                                            key={idx}
-                                                                            className="flex items-center justify-between bg-app rounded-xl px-3 py-2"
-                                                                        >
-                                                                            <div className="flex items-center gap-2">
-                                                                                <span className="text-base">{getItemIcon(item.type)}</span>
-                                                                                <span className="font-semibold text-sm text-primary">{item.name}</span>
-                                                                            </div>
-                                                                            <div className="font-black text-primary text-sm">
-                                                                                {item.amount} {t.unitLabels[item.unit]}
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )
-                                                })}
                                             </div>
                                         )}
                                     </div>
@@ -785,6 +857,53 @@ export default function DietPage() {
                         </>
                     )
                 }
+
+                {/* Start New Diet Confirmation Modal */}
+                {showStartNewDietModal && (
+                    <>
+                        <div
+                            className="fixed inset-0 bg-black/60 z-50"
+                            onClick={() => setShowStartNewDietModal(false)}
+                        />
+                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[60] bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl modal-container">
+                            <h2 className="text-xl font-black text-primary mb-3">{t.startNewDiet}?</h2>
+                            <p className="text-sm text-muted mb-5">{t.archiveNotice}</p>
+
+                            <div className="mb-6">
+                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
+                                    {t.dietStart}
+                                </label>
+                                <input
+                                    type="date"
+                                    value={newDietStartDate}
+                                    onChange={(e) => setNewDietStartDate(e.target.value)}
+                                    className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                />
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowStartNewDietModal(false)}
+                                    className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                                >
+                                    {t.cancel}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setIsNewDietMode(true)
+                                        setPendingNewStartDate(newDietStartDate)
+                                        setEditingWeek(1)
+                                        setWeekItems([])
+                                        setShowStartNewDietModal(false)
+                                    }}
+                                    className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
+                                >
+                                    {t.startNewDiet}
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {/* Delete Diet Confirmation */}
                 {showDeleteConfirm && (

@@ -310,7 +310,7 @@ export default function NewPetPage() {
             <div className="min-h-screen bg-app flex flex-col">
 
                 {/* Header */}
-                <div className="bg-hero px-5 pt-14 pb-6">
+                <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
                     <div className="flex items-center justify-between mb-4">
                         <button
                             onClick={currentStepIndex === 0 ? () => navigate('/home') : handleBack}

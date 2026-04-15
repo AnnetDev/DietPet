@@ -32,7 +32,7 @@ export default function PetPage() {
     const { id } = useParams()
     const navigate = useNavigate()
     const [editModalOpen, setEditModalOpen] = useState(false)
-    const { pets, deletedDiets, language, updatePet, deleteDiet, restoreDiet, permanentlyDeleteDietByDate } = useAppStore()
+    const { pets, deletedDiets, language, updatePet, restoreDiet, permanentlyDeleteDietByDate } = useAppStore()
     const pet = pets.find(p => p.id === id)
     const [showDeletedDiets, setShowDeletedDiets] = useState(false)
     const t = translations[language]
@@ -90,7 +90,7 @@ export default function PetPage() {
     return (
         <Layout>
             <div className="min-h-screen bg-app">
-                <div className="bg-hero px-5 pt-14 pb-6">
+                <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
 
                     <div className="flex items-center justify-between mb-6">
                         <button
@@ -170,8 +170,8 @@ export default function PetPage() {
                     </button>
                 </div>
 
-                {/* Today's feeding plan */}
-                {progress && pet.dietSchedule[progress.week - 1] && (
+                {/* Today's feeding plan — only when diet is active */}
+                {!dietDone && progress && pet.dietSchedule[progress.week - 1] && (
                     <div className="px-5 pb-4">
                         <button
                             onClick={() => navigate(`/pet/${id}/diet`)}
@@ -204,50 +204,39 @@ export default function PetPage() {
                             onClick={() => navigate(`/pet/${id}/diet`)}
                             className="w-full bg-card rounded-2xl p-4 shadow-sm text-left active:scale-95 transition-transform"
                         >
-                            <div className="flex items-center justify-between mb-2">
+                            <div className="mb-2">
                                 <div className="text-xs font-bold text-muted uppercase tracking-wide">
                                     🍽️ {t.diet}
                                 </div>
-                                {progress && (
-                                    <div className="text-xs font-black bg-accent text-on-hero px-2 py-0.5 rounded-full">
-                                        {t.day} {progress.day}
-                                    </div>
-                                )}
                             </div>
                             <div className="text-sm font-bold text-primary mb-3">
                                 {pet.dietSchedule.length} {t.weeks} · {progress ? (dietDone ? t.dietCompleted : `${t.week} ${displayWeek}`) : t.notStarted}
                             </div>
 
-                            {/* Progress bar */}
-                            {progress && (
+                            {/* Progress bar — only when active */}
+                            {progress && !dietDone && (
                                 <div>
                                     <div className="flex justify-between text-xs text-muted mb-1">
-                                        <span>{dietDone ? t.dietCompleted : `${t.week} ${displayWeek} ${t.of} ${totalWeeks}`}</span>
-                                        <span>{Math.min(Math.round((displayWeek / totalWeeks) * 100), 100)}%</span>
+                                        <span>{`${t.week} ${displayWeek} ${t.of} ${totalWeeks} · ${t.day} ${progress.day}`}</span>
+                                        <span>{Math.min(Math.round(progress.day / (totalWeeks * 7) * 100), 100)}%</span>
                                     </div>
                                     <div className="h-1.5 bg-app rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-accent rounded-full transition-all"
-                                            style={{ width: `${Math.min((displayWeek / totalWeeks) * 100, 100)}%` }}
+                                            style={{ width: `${Math.min(progress.day / (totalWeeks * 7) * 100, 100)}%` }}
                                         />
                                     </div>
                                 </div>
                             )}
+
+                            {/* Start new diet link — when diet is done */}
+                            {dietDone && (
+                                <div className="mt-1 pt-3 border-t border-border flex items-center justify-between">
+                                    <span className="text-sm text-muted">{t.noDietActive}</span>
+                                    <span className="text-sm font-bold text-accent">{t.startNewDiet} →</span>
+                                </div>
+                            )}
                         </button>
-                        {dietDone && (
-                            <button
-                                onClick={() => { deleteDiet(pet.id); navigate(`/pet/${id}/diet`) }}
-                                className="w-full mt-2 bg-accent rounded-2xl p-4 flex items-center gap-4 text-on-hero active:scale-95 transition-transform shadow-sm"
-                            >
-                                <div className="w-9 h-9 rounded-full bg-on-hero/20 flex items-center justify-center flex-shrink-0">
-                                    <Plus size={20} strokeWidth={2.5} />
-                                </div>
-                                <div className="text-left">
-                                    <div className="text-sm font-black">{t.createDiet}</div>
-                                    <div className="text-xs opacity-75 mt-0.5">{t.dietExplanation}</div>
-                                </div>
-                            </button>
-                        )}
                     </div>
                 ) : (
                     <div className="px-5 pb-4">
@@ -270,20 +259,19 @@ export default function PetPage() {
                     <div className="px-5 pb-4">
                         <button
                             onClick={() => setShowDeletedDiets(!showDeletedDiets)}
-                            className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-muted py-2 opacity-60"
+                            className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-muted py-2"
                         >
-                            <Trash2 size={14} />
-                            <span>{t.deletedDiets} ({petDeletedDiets.length})</span>
+                            <span>{t.previousDiets} ({petDeletedDiets.length})</span>
                             <span className={`transition-transform ${showDeletedDiets ? 'rotate-180' : ''}`}>▼</span>
                         </button>
 
                         {showDeletedDiets && (
-                            <div className="mt-3 space-y-2 opacity-60">
+                            <div className="mt-2 space-y-2">
                                 {petDeletedDiets.map(diet => {
                                     const daysLeft = getDaysUntilPermanentDelete(diet.deletedAt)
                                     return (
                                         <div key={diet.deletedAt} className="bg-card rounded-xl p-3 border border-border">
-                                            <div className="flex items-start gap-3">
+                                            <div className="flex items-center gap-3">
                                                 <div className="flex-1 min-w-0">
                                                     <div className="font-bold text-sm text-primary">
                                                         🍽️ {t.diet} · {diet.dietSchedule.length} {t.weeks}
@@ -295,10 +283,10 @@ export default function PetPage() {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => restoreDiet(diet.deletedAt)}
-                                                        className="w-8 h-8 rounded-full bg-app flex items-center justify-center text-accent"
-                                                        title={t.restore}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/10 text-accent text-xs font-bold active:scale-95 transition-transform hover:bg-accent/20"
                                                     >
-                                                        <RotateCcw size={14} />
+                                                        <RotateCcw size={12} />
+                                                        {t.restore}
                                                     </button>
                                                     <button
                                                         onClick={() => {
@@ -308,10 +296,10 @@ export default function PetPage() {
                                                                 permanentlyDeleteDietByDate(diet.deletedAt)
                                                             }
                                                         }}
-                                                        className="w-8 h-8 rounded-full bg-app flex items-center justify-center text-red-500"
-                                                        title={t.deletePermanently}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 text-red-500 text-xs font-bold active:scale-95 transition-transform hover:bg-red-500/20"
                                                     >
-                                                        <Trash2 size={14} />
+                                                        <Trash2 size={12} />
+                                                        {t.delete}
                                                     </button>
                                                 </div>
                                             </div>

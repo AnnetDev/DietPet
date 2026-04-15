@@ -46,8 +46,9 @@ function PetCard({
     const totalWeeks = pet.dietSchedule.length || 0
     const dietDone = !!(progress && totalWeeks > 0 && progress.week > totalWeeks)
     const displayWeek = progress ? Math.min(progress.week, totalWeeks) : 0
-    const progressPct = progress && totalWeeks
-        ? Math.min((progress.week - 1) / totalWeeks * 100, 100)
+    const totalDays = totalWeeks * 7
+    const progressPct = progress && totalDays
+        ? Math.min(progress.day / totalDays * 100, 100)
         : 0
     const petAge = pet.birthDate
         ? getAgeFromBirthDate(pet.birthDate)

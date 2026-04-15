@@ -6,7 +6,7 @@ export default function Header() {
     const t = translations[language]
 
     return (
-        <div className="px-5 pt-14 pb-4">
+        <div className="sticky top-0 z-30 bg-app px-5 pt-10 pb-4">
             <div className="text-2xl font-black text-primary">
                 Diet<span className="text-accent">Pet</span>
             </div>
