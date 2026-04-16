@@ -1,5 +1,5 @@
-import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { useAppStore } from '../../store/useAppStore'
+import { translations } from '../../i18n'
 
 export default function Header() {
     const { language } = useAppStore()

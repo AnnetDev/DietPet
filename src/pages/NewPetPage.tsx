@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { Pet } from '../types'
 import { ChevronLeft, Upload, Check } from 'lucide-react'
-import Layout from '../components/Layout'
+import Layout from '../components/layout/Layout'
+import FormField, { inputCls } from '../components/ui/FormField'
 
 
 type Step = 'basic' | 'photo' | 'weight' | 'diagnosis' | 'diet'
@@ -119,44 +120,35 @@ export default function NewPetPage() {
             case 'basic':
                 return (
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                {t.petName} *
-                            </label>
+                        <FormField label={`${t.petName} *`}>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                className={inputCls}
                                 placeholder={t.petNamePlaceholder}
                                 autoFocus
                             />
-                        </div>
+                        </FormField>
 
-                        <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                {t.breed}
-                            </label>
+                        <FormField label={t.breed}>
                             <input
                                 type="text"
                                 value={breed}
                                 onChange={(e) => setBreed(e.target.value)}
-                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                className={inputCls}
                                 placeholder={t.breedPlaceholder}
                             />
-                        </div>
+                        </FormField>
 
-                        <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                {t.birthDate}
-                            </label>
+                        <FormField label={t.birthDate}>
                             <input
                                 type="date"
                                 value={birthDate}
                                 onChange={(e) => setBirthDate(e.target.value)}
-                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                className={inputCls}
                             />
-                        </div>
+                        </FormField>
                     </div>
                 )
 
@@ -310,7 +302,7 @@ export default function NewPetPage() {
             <div className="min-h-screen bg-app flex flex-col">
 
                 {/* Header */}
-                <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
+                <div className="sticky top-0 z-30 bg-hero px-5 pb-6 hero-header">
                     <div className="flex items-center justify-between mb-4">
                         <button
                             onClick={currentStepIndex === 0 ? () => navigate('/home') : handleBack}

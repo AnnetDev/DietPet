@@ -1,32 +1,16 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { Pet } from '../types'
 import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell, Plus, Trash2, RotateCcw, Edit2 } from 'lucide-react'
-import EditPetModal from '../components/EditPetModal'
-import Layout from '../components/Layout'
-
-function getDayAndWeek(startDate: string | null) {
-    if (!startDate) return null
-    const start = new Date(startDate)
-    const today = new Date()
-    const diffMs = today.getTime() - start.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    if (diffDays < 0) return null
-    const day = diffDays + 1
-    const week = Math.ceil(day / 7)
-    return { day, week }
-}
-
-function getAgeFromBirthDate(birthDate: string): number {
-    const birth = new Date(birthDate)
-    const today = new Date()
-    let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
-    return age
-}
+import EditPetModal from '../components/pet/EditPetModal'
+import Layout from '../components/layout/Layout'
+import ProgressBar from '../components/ui/ProgressBar'
+import DietItemRow from '../components/pet/DietItemRow'
+import ModalWrapper from '../components/ui/ModalWrapper'
+import FormField, { inputCls } from '../components/ui/FormField'
+import { getDayAndWeek, getAgeFromBirthDate, getDaysUntilDelete } from '../utils/dietUtils'
 
 export default function PetPage() {
     const { id } = useParams()
@@ -57,25 +41,7 @@ export default function PetPage() {
         updatePet({ ...pet, ...updates })
     }
 
-    const getItemIcon = (type: string) => {
-        switch (type) {
-            case 'dry': return '🥣'
-            case 'wet': return '🍱'
-            case 'medicine': return '💊'
-            case 'natural': return '🥩'
-            default: return '📦'
-        }
-    }
-
     const petDeletedDiets = deletedDiets.filter(d => d.petId === id)
-
-    const getDaysUntilPermanentDelete = (deletedAt: string) => {
-        const deleted = new Date(deletedAt).getTime()
-        const now = new Date().getTime()
-        const fourteenDays = 14 * 24 * 60 * 60 * 1000
-        const timeLeft = fourteenDays - (now - deleted)
-        return Math.ceil(timeLeft / (1000 * 60 * 60 * 24))
-    }
 
     const openEditNotesModal = () => {
         setEditNotes(pet.notes || '')
@@ -90,7 +56,7 @@ export default function PetPage() {
     return (
         <Layout>
             <div className="min-h-screen bg-app">
-                <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
+                <div className="sticky top-0 z-30 bg-hero px-5 pb-6 hero-header">
 
                     <div className="flex items-center justify-between mb-6">
                         <button
@@ -182,15 +148,7 @@ export default function PetPage() {
                             </div>
                             <div className="space-y-2">
                                 {pet.dietSchedule[progress.week - 1].items.map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between bg-on-hero/10 rounded-xl px-3 py-2.5">
-                                        <div className="flex items-center gap-2 text-on-hero">
-                                            <span className="text-lg">{getItemIcon(item.type)}</span>
-                                            <span className="font-semibold text-sm">{item.name}</span>
-                                        </div>
-                                        <div className="font-black text-on-hero text-sm">
-                                            {item.amount} {t.unitLabels[item.unit]}
-                                        </div>
-                                    </div>
+                                    <DietItemRow key={idx} item={item} unitLabel={t.unitLabels[item.unit]} variant="on-hero" />
                                 ))}
                             </div>
                         </button>
@@ -215,18 +173,11 @@ export default function PetPage() {
 
                             {/* Progress bar — only when active */}
                             {progress && !dietDone && (
-                                <div>
-                                    <div className="flex justify-between text-xs text-muted mb-1">
-                                        <span>{`${t.week} ${displayWeek} ${t.of} ${totalWeeks} · ${t.day} ${progress.day}`}</span>
-                                        <span>{Math.min(Math.round(progress.day / (totalWeeks * 7) * 100), 100)}%</span>
-                                    </div>
-                                    <div className="h-1.5 bg-app rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-accent rounded-full transition-all"
-                                            style={{ width: `${Math.min(progress.day / (totalWeeks * 7) * 100, 100)}%` }}
-                                        />
-                                    </div>
-                                </div>
+                                <ProgressBar
+                                    percent={progress.day / (totalWeeks * 7) * 100}
+                                    leftLabel={`${t.week} ${displayWeek} ${t.of} ${totalWeeks} · ${t.day} ${progress.day}`}
+                                    rightLabel={`${Math.min(Math.round(progress.day / (totalWeeks * 7) * 100), 100)}%`}
+                                />
                             )}
 
                             {/* Start new diet link — when diet is done */}
@@ -268,7 +219,7 @@ export default function PetPage() {
                         {showDeletedDiets && (
                             <div className="mt-2 space-y-2">
                                 {petDeletedDiets.map(diet => {
-                                    const daysLeft = getDaysUntilPermanentDelete(diet.deletedAt)
+                                    const daysLeft = getDaysUntilDelete(diet.deletedAt, 14)
                                     return (
                                         <div key={diet.deletedAt} className="bg-card rounded-xl p-3 border border-border">
                                             <div className="flex items-center gap-3">
@@ -345,44 +296,35 @@ export default function PetPage() {
 
                 {/* Edit Notes Modal */}
                 {showEditNotesModal && (
-                    <>
-                        <div
-                            className="fixed inset-0 bg-black/50 z-40"
-                            onClick={() => setShowEditNotesModal(false)}
-                        />
-                        <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl modal-container">
-                            <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
+                    <ModalWrapper onClose={() => setShowEditNotesModal(false)}>
+                        <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
 
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.notes}
-                                </label>
-                                <textarea
-                                    value={editNotes}
-                                    onChange={(e) => setEditNotes(e.target.value)}
-                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent resize-none"
-                                    rows={5}
-                                    placeholder={t.notesPlaceholder}
-                                    autoFocus
-                                />
-                            </div>
+                        <FormField label={t.notes}>
+                            <textarea
+                                value={editNotes}
+                                onChange={(e) => setEditNotes(e.target.value)}
+                                className={`${inputCls} resize-none`}
+                                rows={5}
+                                placeholder={t.notesPlaceholder}
+                                autoFocus
+                            />
+                        </FormField>
 
-                            <div className="flex gap-3 mt-6">
-                                <button
-                                    onClick={() => setShowEditNotesModal(false)}
-                                    className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                                >
-                                    {t.cancel}
-                                </button>
-                                <button
-                                    onClick={handleSaveNotes}
-                                    className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
-                                >
-                                    {t.save}
-                                </button>
-                            </div>
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setShowEditNotesModal(false)}
+                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleSaveNotes}
+                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
+                            >
+                                {t.save}
+                            </button>
                         </div>
-                    </>
+                    </ModalWrapper>
                 )}
             </div>
         </Layout>

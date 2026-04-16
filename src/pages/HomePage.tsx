@@ -1,32 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { Pet } from '../types'
 import { MoreHorizontal, Plus, Copy, Trash2, Pill, RotateCcw } from 'lucide-react'
-import Header from '../components/Header'
-import Layout from '../components/Layout'
-
-function getDayAndWeek(startDate: string | null) {
-    if (!startDate) return null
-    const start = new Date(startDate)
-    const today = new Date()
-    const diffMs = today.getTime() - start.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    if (diffDays < 0) return null
-    const day = diffDays + 1
-    const week = Math.ceil(day / 7)
-    return { day, week }
-}
-
-function getAgeFromBirthDate(birthDate: string): number {
-    const birth = new Date(birthDate)
-    const today = new Date()
-    let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
-    return age
-}
+import Header from '../components/layout/Header'
+import Layout from '../components/layout/Layout'
+import ProgressBar from '../components/ui/ProgressBar'
+import ConfirmModal from '../components/ui/ConfirmModal'
+import { getDayAndWeek, getAgeFromBirthDate, getDaysUntilDelete } from '../utils/dietUtils'
 
 function PetCard({
     pet,
@@ -129,12 +111,7 @@ function PetCard({
                                 </span>
                             )}
                         </div>
-                        <div className="h-1.5 bg-app rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all ${dietDone ? 'bg-green-700/60' : 'bg-accent'}`}
-                                style={{ width: `${progressPct}%` }}
-                            />
-                        </div>
+                        <ProgressBar percent={progressPct} variant={dietDone ? 'completed' : 'default'} />
                     </div>
                 )}
             </button>
@@ -165,13 +142,6 @@ export default function HomePage() {
         }
     }
 
-    const getDaysUntilPermanentDelete = (deletedAt: string) => {
-        const deleted = new Date(deletedAt).getTime()
-        const now = new Date().getTime()
-        const thirtyDays = 30 * 24 * 60 * 60 * 1000
-        const timeLeft = thirtyDays - (now - deleted)
-        return Math.ceil(timeLeft / (1000 * 60 * 60 * 24))
-    }
 
     return (
         <Layout>
@@ -214,7 +184,7 @@ export default function HomePage() {
                         {showDeletedSection && (
                             <div className="mt-3 space-y-2 opacity-60">
                                 {deletedPets.map(pet => {
-                                    const daysLeft = getDaysUntilPermanentDelete(pet.deletedAt)
+                                    const daysLeft = getDaysUntilDelete(pet.deletedAt, 30)
                                     return (
                                         <div key={pet.id} className="bg-card rounded-xl p-3 border border-border">
                                             <div className="flex items-start gap-3">
@@ -261,34 +231,16 @@ export default function HomePage() {
                 )}
             </div>
 
-            {/* Delete confirmation modal */}
             {petToDelete && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setPetToDelete(null)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                        <h2 className="text-xl font-black text-primary mb-4">{t.deletePetConfirm}</h2>
-                        <p className="text-sm text-muted mb-6">
-                            {t.deletePetExplanation}
-                        </p>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setPetToDelete(null)}
-                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                            >
-                                {t.cancel}
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold"
-                            >
-                                {t.delete}
-                            </button>
-                        </div>
-                    </div>
-                </>
+                <ConfirmModal
+                    title={t.deletePetConfirm}
+                    description={t.deletePetExplanation}
+                    confirmLabel={t.delete}
+                    cancelLabel={t.cancel}
+                    onConfirm={confirmDelete}
+                    onClose={() => setPetToDelete(null)}
+                    danger
+                />
             )}
         </Layout>
     )

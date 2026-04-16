@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { ChevronLeft, Plus, Trash2, Edit2 } from 'lucide-react'
 import { MedCourse, Diagnosis } from '../types'
 import { Pill, HeartPlus } from 'lucide-react'
-import Layout from '../components/Layout'
+import Layout from '../components/layout/Layout'
+import ProgressBar from '../components/ui/ProgressBar'
+import ModalWrapper from '../components/ui/ModalWrapper'
+import FormField, { inputCls } from '../components/ui/FormField'
+import { getDaysRemaining, getTotalDays, getDaysPassed } from '../utils/dietUtils'
 
 
 export default function DiagnosisPage() {
@@ -136,31 +140,12 @@ export default function DiagnosisPage() {
         })
     }
 
-    const getDaysRemaining = (endDate: string) => {
-        const end = new Date(endDate)
-        const today = new Date()
-        const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-        return diff
-    }
-
-    const getTotalDays = (startDate: string, endDate: string) => {
-        const start = new Date(startDate)
-        const end = new Date(endDate)
-        return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
-    }
-
-    const getDaysPassed = (startDate: string) => {
-        const start = new Date(startDate)
-        const today = new Date()
-        return Math.max(0, Math.ceil((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)))
-    }
-
     return (
 <Layout>
 <div className="min-h-screen bg-app pb-20">
 
             {/* Header */}
-            <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
+            <div className="sticky top-0 z-30 bg-hero px-5 pb-6 hero-header">
                 <div className="flex items-center justify-between mb-4">
                     <button
                         onClick={() => navigate(`/pet/${id}`)}
@@ -289,18 +274,12 @@ export default function DiagnosisPage() {
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <div className="flex justify-between text-xs text-muted mb-1">
-                                                <span>{t.progress}</span>
-                                                <span>{daysPassed}/{totalDays} {t.days} · {daysRemaining > 0 ? `${daysRemaining} ${t.daysLeft}` : t.completed}</span>
-                                            </div>
-                                            <div className="h-2 bg-app rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-accent rounded-full transition-all"
-                                                    style={{ width: `${progress}%` }}
-                                                />
-                                            </div>
-                                        </div>
+                                        <ProgressBar
+                                            percent={progress}
+                                            height="md"
+                                            leftLabel={t.progress}
+                                            rightLabel={`${daysPassed}/${totalDays} ${t.days} · ${daysRemaining > 0 ? `${daysRemaining} ${t.daysLeft}` : t.completed}`}
+                                        />
 
                                         {course.notes && (
                                             <div className="mt-3 pt-3 border-t border-border text-sm text-muted">
@@ -390,111 +369,85 @@ export default function DiagnosisPage() {
 
             {/* Add/Edit Course Modal */}
             {showAddModal && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setShowAddModal(false)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl max-h-[85vh] overflow-y-auto">
+                <ModalWrapper onClose={() => setShowAddModal(false)} scrollable>
                         <h2 className="text-xl font-black text-primary mb-6">
                             {editingCourse ? t.editCourse : t.addCourse}
                         </h2>
 
                         <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.medicineName}
-                                </label>
+                            <FormField label={t.medicineName}>
                                 <input
                                     type="text"
                                     value={courseName}
                                     onChange={(e) => setCourseName(e.target.value)}
-                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
+                                    className={inputCls}
                                     placeholder={t.medicineNamePlaceholder}
                                 />
-                            </div>
+                            </FormField>
 
                             <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                        {t.dosage}
-                                    </label>
+                                <FormField label={t.dosage}>
                                     <input
                                         type="number"
                                         step="0.5"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
-                                        className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
+                                        className={inputCls}
                                         placeholder="1"
                                     />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                        {t.unit}
-                                    </label>
+                                </FormField>
+                                <FormField label={t.unit}>
                                     <select
                                         value={unit}
                                         onChange={(e) => setUnit(e.target.value as typeof unit)}
-                                        className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                                        className={inputCls}
                                     >
                                         <option value="таб">{language === 'ru' ? 'таб' : 'tab'}</option>
                                         <option value="мл">{language === 'ru' ? 'мл' : 'ml'}</option>
                                         <option value="кап">{language === 'ru' ? 'кап' : 'drops'}</option>
                                     </select>
-                                </div>
+                                </FormField>
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.timesPerDay}
-                                </label>
+                            <FormField label={t.timesPerDay}>
                                 <input
                                     type="number"
                                     value={timesPerDay}
                                     onChange={(e) => setTimesPerDay(e.target.value)}
-                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
+                                    className={inputCls}
                                     placeholder="2"
                                 />
-                            </div>
+                            </FormField>
 
                             <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                        {t.startDate}
-                                    </label>
+                                <FormField label={t.startDate}>
                                     <input
                                         type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
-                                        className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent min-w-0 modal-container"
+                                        className={inputCls}
                                     />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                        {t.endDate}
-                                    </label>
+                                </FormField>
+                                <FormField label={t.endDate}>
                                     <input
                                         type="date"
                                         value={endDate}
                                         placeholder='DD-MM-YYYY'
                                         onChange={(e) => setEndDate(e.target.value)}
-                                        className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
+                                        className={inputCls}
                                     />
-                                </div>
+                                </FormField>
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.notes}
-                                </label>
+                            <FormField label={t.notes}>
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
-                                    className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                                    className={`${inputCls} resize-none`}
                                     rows={3}
                                     placeholder={t.notesPlaceholder}
                                 />
-                            </div>
+                            </FormField>
                         </div>
 
                         <div className="flex gap-3 mt-6">
@@ -512,157 +465,93 @@ export default function DiagnosisPage() {
                                 {t.save}
                             </button>
                         </div>
-                    </div>
-                </>
+                </ModalWrapper>
             )}
 
             {/* Add Diagnosis Modal */}
             {showAddDiagnosisModal && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setShowAddDiagnosisModal(false)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                        <h2 className="text-xl font-black text-primary mb-6">{t.addDiagnosis}</h2>
-
-                        <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                {t.diagnosis}
-                            </label>
-                            <input
-                                type="text"
-                                value={newDiagnosisName}
-                                onChange={(e) => setNewDiagnosisName(e.target.value)}
-                                className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
-                                placeholder={t.diagnosisPlaceholder}
-                                autoFocus
-                            />
-                        </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                onClick={() => setShowAddDiagnosisModal(false)}
-                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                            >
-                                {t.cancel}
-                            </button>
-                            <button
-                                onClick={handleAddDiagnosis}
-                                disabled={!newDiagnosisName.trim()}
-                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold disabled:opacity-50"
-                            >
-                                {t.add}
-                            </button>
-                        </div>
+                <ModalWrapper onClose={() => setShowAddDiagnosisModal(false)}>
+                    <h2 className="text-xl font-black text-primary mb-6">{t.addDiagnosis}</h2>
+                    <FormField label={t.diagnosis}>
+                        <input
+                            type="text"
+                            value={newDiagnosisName}
+                            onChange={(e) => setNewDiagnosisName(e.target.value)}
+                            className={inputCls}
+                            placeholder={t.diagnosisPlaceholder}
+                            autoFocus
+                        />
+                    </FormField>
+                    <div className="flex gap-3 mt-6">
+                        <button onClick={() => setShowAddDiagnosisModal(false)} className="flex-1 py-3 rounded-xl bg-app text-primary font-bold">
+                            {t.cancel}
+                        </button>
+                        <button
+                            onClick={handleAddDiagnosis}
+                            disabled={!newDiagnosisName.trim()}
+                            className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold disabled:opacity-50"
+                        >
+                            {t.add}
+                        </button>
                     </div>
-                </>
+                </ModalWrapper>
             )}
 
             {/* Edit Notes Modal */}
             {showEditNotesModal && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setShowEditNotesModal(false)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                        <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
-
-                        <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                {t.notes}
-                            </label>
-                            <textarea
-                                value={editNotes}
-                                onChange={(e) => setEditNotes(e.target.value)}
-                                className="w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent resize-none"
-                                rows={5}
-                                placeholder={t.notesPlaceholder}
-                                autoFocus
-                            />
-                        </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                onClick={() => setShowEditNotesModal(false)}
-                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                            >
-                                {t.cancel}
-                            </button>
-                            <button
-                                onClick={handleSaveNotes}
-                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
-                            >
-                                {t.save}
-                            </button>
-                        </div>
+                <ModalWrapper onClose={() => setShowEditNotesModal(false)}>
+                    <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
+                    <FormField label={t.notes}>
+                        <textarea
+                            value={editNotes}
+                            onChange={(e) => setEditNotes(e.target.value)}
+                            className={`${inputCls} resize-none`}
+                            rows={5}
+                            placeholder={t.notesPlaceholder}
+                            autoFocus
+                        />
+                    </FormField>
+                    <div className="flex gap-3 mt-6">
+                        <button onClick={() => setShowEditNotesModal(false)} className="flex-1 py-3 rounded-xl bg-app text-primary font-bold">
+                            {t.cancel}
+                        </button>
+                        <button onClick={handleSaveNotes} className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold">
+                            {t.save}
+                        </button>
                     </div>
-                </>
+                </ModalWrapper>
             )}
 
             {viewingCourse && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setViewingCourse(null)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl max-h-[85vh] overflow-y-auto modal-container">
-                        <h2 className="text-xl font-black text-primary mb-6">
-                            {viewingCourse.name}
-                        </h2>
-
-                        <div className="space-y-4">
-                            {/* Info blocks */}
-                            <div className="bg-app rounded-xl p-4">
-                                <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
-                                    {t.dosage}
-                                </div>
-                                <div className="text-lg font-black text-primary">
-                                    {viewingCourse.amount} {t.unitLabels[viewingCourse.unit]} · {viewingCourse.timesPerDay} {t.timesPerDay}
-                                </div>
+                <ModalWrapper onClose={() => setViewingCourse(null)} scrollable>
+                    <h2 className="text-xl font-black text-primary mb-6">{viewingCourse.name}</h2>
+                    <div className="space-y-4">
+                        <div className="bg-app rounded-xl p-4">
+                            <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">{t.dosage}</div>
+                            <div className="text-lg font-black text-primary">
+                                {viewingCourse.amount} {t.unitLabels[viewingCourse.unit]} · {viewingCourse.timesPerDay} {t.timesPerDay}
                             </div>
-
-                            <div className="bg-app rounded-xl p-4">
-                                <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
-                                    {t.duration}
-                                </div>
-                                <div className="text-sm font-bold text-primary">
-                                    {new Date(viewingCourse.startDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
-                                        day: 'numeric',
-                                        month: 'short',
-                                        year: 'numeric'
-                                    })} — {new Date(viewingCourse.endDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
-                                        day: 'numeric',
-                                        month: 'short',
-                                        year: 'numeric'
-                                    })}
-                                </div>
-                                <div className="text-xs text-muted mt-1">
-                                    {getTotalDays(viewingCourse.startDate, viewingCourse.endDate)} {t.days}
-                                </div>
-                            </div>
-
-                            {viewingCourse.notes && (
-                                <div className="bg-app rounded-xl p-4">
-                                    <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">
-                                        📝 {t.notes}
-                                    </div>
-                                    <div className="text-sm text-primary leading-relaxed">
-                                        {viewingCourse.notes}
-                                    </div>
-                                </div>
-                            )}
                         </div>
-
-                        <button
-                            onClick={() => setViewingCourse(null)}
-                            className="w-full py-3 rounded-xl bg-accent text-on-hero font-bold mt-6"
-                        >
-                            {t.close}
-                        </button>
+                        <div className="bg-app rounded-xl p-4">
+                            <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">{t.duration}</div>
+                            <div className="text-sm font-bold text-primary">
+                                {new Date(viewingCourse.startDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })} — {new Date(viewingCourse.endDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </div>
+                            <div className="text-xs text-muted mt-1">
+                                {getTotalDays(viewingCourse.startDate, viewingCourse.endDate)} {t.days}
+                            </div>
+                        </div>
+                        {viewingCourse.notes && (
+                            <div className="bg-app rounded-xl p-4">
+                                <div className="text-xs font-bold text-muted uppercase tracking-wide mb-2">📝 {t.notes}</div>
+                                <div className="text-sm text-primary leading-relaxed">{viewingCourse.notes}</div>
+                            </div>
+                        )}
                     </div>
-                </>
+                    <button onClick={() => setViewingCourse(null)} className="w-full py-3 rounded-xl bg-accent text-on-hero font-bold mt-6">
+                        {t.close}
+                    </button>
+                </ModalWrapper>
             )}
         </div>
 </Layout>

@@ -1,5 +1,5 @@
 import { HouseHeart } from 'lucide-react';
-import DropLogo from '../assets/dietpetlogo.svg?react'
+import DropLogo from '../../assets/dietpetlogo.svg?react'
 import { useNavigate } from 'react-router-dom';
 
 
