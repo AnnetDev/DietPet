@@ -1,5 +1,5 @@
-import { WeightEntry } from '../types'
-import { Language } from '../types'
+import { WeightEntry } from '../../types'
+import { Language } from '../../types'
 
 interface WeightChartProps {
     data: WeightEntry[]

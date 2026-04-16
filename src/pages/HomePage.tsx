@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { Pet } from '../types'
 import { MoreHorizontal, Plus, Copy, Trash2, Pill, RotateCcw } from 'lucide-react'
-import Header from '../components/Header'
-import Layout from '../components/Layout'
-import ProgressBar from '../components/ProgressBar'
+import Header from '../components/layout/Header'
+import Layout from '../components/layout/Layout'
+import ProgressBar from '../components/ui/ProgressBar'
+import ConfirmModal from '../components/ui/ConfirmModal'
 import { getDayAndWeek, getAgeFromBirthDate, getDaysUntilDelete } from '../utils/dietUtils'
 
 function PetCard({
@@ -230,34 +231,16 @@ export default function HomePage() {
                 )}
             </div>
 
-            {/* Delete confirmation modal */}
             {petToDelete && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setPetToDelete(null)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                        <h2 className="text-xl font-black text-primary mb-4">{t.deletePetConfirm}</h2>
-                        <p className="text-sm text-muted mb-6">
-                            {t.deletePetExplanation}
-                        </p>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setPetToDelete(null)}
-                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                            >
-                                {t.cancel}
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold"
-                            >
-                                {t.delete}
-                            </button>
-                        </div>
-                    </div>
-                </>
+                <ConfirmModal
+                    title={t.deletePetConfirm}
+                    description={t.deletePetExplanation}
+                    confirmLabel={t.delete}
+                    cancelLabel={t.cancel}
+                    onConfirm={confirmDelete}
+                    onClose={() => setPetToDelete(null)}
+                    danger
+                />
             )}
         </Layout>
     )

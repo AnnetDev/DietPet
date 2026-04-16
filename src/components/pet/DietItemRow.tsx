@@ -1,5 +1,5 @@
-import { DietItem } from '../types'
-import { getItemIcon } from '../utils/dietUtils'
+import { DietItem } from '../../types'
+import { getItemIcon } from '../../utils/dietUtils'
 
 interface DietItemRowProps {
     item: DietItem

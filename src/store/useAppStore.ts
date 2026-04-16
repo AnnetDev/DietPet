@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { AppState, Pet, Language, DeletedPet, DeletedDiet } from '../types'
-import { getDefaultPets } from '../data/defaultPets'
+import { getDefaultPets } from '../constants/defaultPets'
 
 const STORAGE_KEY = 'dietpet_data'
 

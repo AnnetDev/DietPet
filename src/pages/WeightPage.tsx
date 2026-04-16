@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { ChevronLeft, Plus, Trash2, Dumbbell } from 'lucide-react'
-import WeightChart from '../components/WeightChart'
-import Layout from '../components/Layout'
+import WeightChart from '../components/pet/WeightChart'
+import Layout from '../components/layout/Layout'
+import ModalWrapper from '../components/ui/ModalWrapper'
+import FormField, { inputCls } from '../components/ui/FormField'
 
 type TimeRange = 'week' | 'month' | 'year' | 'all'
 
@@ -86,7 +88,7 @@ export default function WeightPage() {
         <Layout><div className="min-h-screen bg-app pb-20">
 
             {/* Header */}
-            <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
+            <div className="sticky top-0 z-30 bg-hero px-5 pb-6 hero-header">
                 <div className="flex items-center justify-between mb-4">
                     <button
                         onClick={() => navigate(`/pet/${id}`)}
@@ -187,60 +189,42 @@ export default function WeightPage() {
 
             {/* Add weight modal */}
             {showAddModal && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setShowAddModal(false)}
-                    />
-                    <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-card rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                        <h2 className="text-xl font-black text-primary mb-6">{t.addWeight}</h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.date}
-                                </label>
-                                <input
-                                    type="date"
-                                    value={newDate}
-                                    onChange={(e) => setNewDate(e.target.value)}
-                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent min-w-0 modal-container"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.weight} ({t.kg})
-                                </label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    value={newWeight}
-                                    onChange={(e) => setNewWeight(e.target.value)}
-                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent modal-container"
-                                    placeholder="12.5"
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                onClick={() => setShowAddModal(false)}
-                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                            >
-                                {t.cancel}
-                            </button>
-                            <button
-                                onClick={handleAddWeight}
-                                disabled={!newWeight}
-                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold disabled:opacity-50"
-                            >
-                                {t.save}
-                            </button>
-                        </div>
+                <ModalWrapper onClose={() => setShowAddModal(false)}>
+                    <h2 className="text-xl font-black text-primary mb-6">{t.addWeight}</h2>
+                    <div className="space-y-4">
+                        <FormField label={t.date}>
+                            <input
+                                type="date"
+                                value={newDate}
+                                onChange={(e) => setNewDate(e.target.value)}
+                                className={inputCls}
+                            />
+                        </FormField>
+                        <FormField label={`${t.weight} (${t.kg})`}>
+                            <input
+                                type="number"
+                                step="0.1"
+                                value={newWeight}
+                                onChange={(e) => setNewWeight(e.target.value)}
+                                className={inputCls}
+                                placeholder="12.5"
+                                autoFocus
+                            />
+                        </FormField>
                     </div>
-                </>
+                    <div className="flex gap-3 mt-6">
+                        <button onClick={() => setShowAddModal(false)} className="flex-1 py-3 rounded-xl bg-app text-primary font-bold">
+                            {t.cancel}
+                        </button>
+                        <button
+                            onClick={handleAddWeight}
+                            disabled={!newWeight}
+                            className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold disabled:opacity-50"
+                        >
+                            {t.save}
+                        </button>
+                    </div>
+                </ModalWrapper>
             )}
         </div>
         </Layout>

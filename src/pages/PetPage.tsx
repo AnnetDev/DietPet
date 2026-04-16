@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import { translations } from '../locales'
+import { translations } from '../i18n'
 import { Pet } from '../types'
 import { ChevronLeft, Dot, SquarePen, Pill, Dumbbell, Plus, Trash2, RotateCcw, Edit2 } from 'lucide-react'
-import EditPetModal from '../components/EditPetModal'
-import Layout from '../components/Layout'
-import ProgressBar from '../components/ProgressBar'
-import DietItemRow from '../components/DietItemRow'
-import ModalWrapper from '../components/ModalWrapper'
+import EditPetModal from '../components/pet/EditPetModal'
+import Layout from '../components/layout/Layout'
+import ProgressBar from '../components/ui/ProgressBar'
+import DietItemRow from '../components/pet/DietItemRow'
+import ModalWrapper from '../components/ui/ModalWrapper'
+import FormField, { inputCls } from '../components/ui/FormField'
 import { getDayAndWeek, getAgeFromBirthDate, getDaysUntilDelete } from '../utils/dietUtils'
 
 export default function PetPage() {
@@ -55,7 +56,7 @@ export default function PetPage() {
     return (
         <Layout>
             <div className="min-h-screen bg-app">
-                <div className="sticky top-0 z-30 bg-hero px-5 pt-10 pb-6">
+                <div className="sticky top-0 z-30 bg-hero px-5 pb-6 hero-header">
 
                     <div className="flex items-center justify-between mb-6">
                         <button
@@ -296,36 +297,33 @@ export default function PetPage() {
                 {/* Edit Notes Modal */}
                 {showEditNotesModal && (
                     <ModalWrapper onClose={() => setShowEditNotesModal(false)}>
-                            <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
+                        <h2 className="text-xl font-black text-primary mb-6">{t.editNotes}</h2>
 
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-wide mb-1.5">
-                                    {t.notes}
-                                </label>
-                                <textarea
-                                    value={editNotes}
-                                    onChange={(e) => setEditNotes(e.target.value)}
-                                    className="w-full max-w-full bg-app border border-border rounded-xl px-4 py-3 text-primary font-semibold focus:outline-none focus:ring-2 focus:ring-accent resize-none"
-                                    rows={5}
-                                    placeholder={t.notesPlaceholder}
-                                    autoFocus
-                                />
-                            </div>
+                        <FormField label={t.notes}>
+                            <textarea
+                                value={editNotes}
+                                onChange={(e) => setEditNotes(e.target.value)}
+                                className={`${inputCls} resize-none`}
+                                rows={5}
+                                placeholder={t.notesPlaceholder}
+                                autoFocus
+                            />
+                        </FormField>
 
-                            <div className="flex gap-3 mt-6">
-                                <button
-                                    onClick={() => setShowEditNotesModal(false)}
-                                    className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
-                                >
-                                    {t.cancel}
-                                </button>
-                                <button
-                                    onClick={handleSaveNotes}
-                                    className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
-                                >
-                                    {t.save}
-                                </button>
-                            </div>
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setShowEditNotesModal(false)}
+                                className="flex-1 py-3 rounded-xl bg-app text-primary font-bold"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleSaveNotes}
+                                className="flex-1 py-3 rounded-xl bg-accent text-on-hero font-bold"
+                            >
+                                {t.save}
+                            </button>
+                        </div>
                     </ModalWrapper>
                 )}
             </div>
